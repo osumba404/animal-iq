@@ -2,7 +2,6 @@
 
 <?php
 require_once '../includes/db.php';
-require_once '../includes/header.php';
 require_once 'admin_header.php';
 
 
@@ -44,5 +43,3 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <?php endforeach; ?>
 </table>
 
-<br><a href="dashboard.php">← Back to Dashboard</a>
-<?php require_once '../includes/footer.php'; ?>

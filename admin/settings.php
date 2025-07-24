@@ -1,4 +1,0 @@
-<!-- admin/settings.php -->
-<?php
-
-?>

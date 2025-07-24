@@ -1,5 +1,17 @@
+<!-- public/nav.php -->
+<?php
+require_once 'header.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start session if not already started
+}
+
+// Simple login check: is user_id set in session?
+$is_logged_in = isset($_SESSION['user_id']);
+?>
+
 <style>
-    nav ul {
+nav ul {
     list-style-type: none;
     display: flex;
     flex-wrap: wrap;
@@ -16,7 +28,6 @@ nav ul li a {
 nav ul li a:hover {
     background: #246b46;
 }
-
 </style>
 
 <nav>
@@ -31,7 +42,8 @@ nav ul li a:hover {
         <li><a href="forum.php">Forum</a></li>
         <li><a href="contribute.php">Contribute</a></li>
         <li><a href="support.php">Support</a></li>
-        <?php if (function_exists('is_logged_in') && is_logged_in()): ?>
+
+        <?php if ($is_logged_in): ?>
             <li><a href="profile.php">Profile</a></li>
             <li><a href="logout.php">Logout</a></li>
         <?php else: ?>

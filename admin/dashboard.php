@@ -89,7 +89,6 @@ $recent_threads = fetchRecent('forum_threads');
 <p><a href="manage_gallery.php">Manage Gallery</a></p>
 <p><a href="manage_events.php">Manage Events</a></p>
 <p><a href="manage_forum.php">Manage Forum</a></p>
-<!-- <p><a href="manage_knowledge.php">Manage Indigenous Knowledge</a></p> -->
 <p><a href="manage_podcasts.php">Manage Podcasts</a></p>
 <p><a href="manage_badges.php">Manage Badges</a></p>
 <p><a href="site_settings.php">Site Settings</a></p>

@@ -17,6 +17,8 @@ CREATE TABLE users (
     last_login DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE users ADD COLUMN profile_picture VARCHAR(255) DEFAULT 'default.png';
+
 
 -- ADMINS
 CREATE TABLE admins (

@@ -2,7 +2,6 @@
 
 <?php
 require_once '../includes/db.php';
-require_once '../includes/header.php';
 require_once 'admin_header.php';
 
 if (!isset($_GET['id'])) {

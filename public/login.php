@@ -1,6 +1,6 @@
 
 <?php
-require_once '../includes/header.php';
+require_once 'header.php';
 require_once 'nav.php';
 
 $email = $_GET['email'] ?? '';
@@ -15,4 +15,4 @@ $password = $_GET['password'] ?? '';
 </form>
 
 <a href="https://accounts.google.com/o/oauth2/auth?...">Login with Google</a>
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once 'footer.php'; ?>

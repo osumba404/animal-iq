@@ -1,14 +1,14 @@
 <!-- admin/manage_badges.php -->
 
 <?php
-require_once '../config/db.php';
+require_once '../includes/db.php';
 require_once 'admin_header.php';
-session_start();
+//session_start();
 
-if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'super_admin'])) {
-    header("Location: ../public/login.php");
-    exit();
-}
+// if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'super_admin'])) {
+//     header("Location: admin_login.php");
+//     exit();
+// }
 
 $action = $_GET['action'] ?? 'list';
 
@@ -206,7 +206,7 @@ if (isset($_GET['delete'])) {
             </tr>
         </thead>
         <tbody>
-        <?php foreach (fetchAllBadges($conn) as $badge): ?>
+        <?php foreach (fetchAllBadges($pdo) as $badge): ?>
             <tr>
                 <td>
                     <?php if (!empty($badge['icon'])): ?>

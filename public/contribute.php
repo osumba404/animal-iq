@@ -1,7 +1,7 @@
 <?php
 // contribute.php - Contribution Page
 require_once '../includes/auth.php';
-require_once '../includes/header.php';
+require_once 'header.php';
 require_once 'nav.php';
 ?>
 <h1>Contribute Content</h1>
@@ -9,4 +9,4 @@ require_once 'nav.php';
 <form action="../api/submit-contribution.php" method="post" enctype="multipart/form-data">
   <!-- form fields here -->
 </form>
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once 'footer.php'; ?>

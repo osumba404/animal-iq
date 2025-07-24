@@ -1,6 +1,5 @@
 <?php
 require_once '../includes/db.php';
-require_once '../includes/header.php';
 require_once 'admin_header.php';
 
 // Fetch all animals with taxonomy info (join with taxonomy table)
@@ -59,4 +58,4 @@ $animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </table>
 
 <br><a href="dashboard.php">← Back to Dashboard</a>
-<?php require_once '../includes/footer.php'; ?>
+
