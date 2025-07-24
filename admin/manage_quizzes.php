@@ -3,6 +3,7 @@
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
+require_once 'admin_header.php';
 
 // Fetch quizzes
 $stmt = $pdo->query("SELECT * FROM quizzes ORDER BY created_at DESC");

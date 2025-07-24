@@ -1,6 +1,7 @@
 <!-- admin/view_signups.php -->
  <?php
 require_once '../includes/db.php';
+require_once 'admin_header.php';
 
 $event_id = $_GET['event_id'] ?? null;
 if (!$event_id) {

@@ -3,6 +3,7 @@
 <?php
 require_once '../includes/db.php';
 require_once '../includes/header.php';
+require_once 'admin_header.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $common_name = $_POST['common_name'];

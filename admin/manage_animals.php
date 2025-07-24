@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/db.php';
 require_once '../includes/header.php';
+require_once 'admin_header.php';
 
 // Fetch all animals with taxonomy info (join with taxonomy table)
 $stmt = $pdo->query("

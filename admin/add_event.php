@@ -3,6 +3,7 @@
 <?php
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
+require_once 'admin_header.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
@@ -10,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_date = $_POST['event_date'];
     $type = trim($_POST['type']);
     $location = trim($_POST['location']);
-    $created_by = 'admin@example.com'; // Replace with actual admin session/email
+    $created_by = $_SESSION['admin_id']; // ✅ use admin ID from session
 
     $stmt = $pdo->prepare("INSERT INTO events (title, description, event_date, type, location, created_by) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$title, $description, $event_date, $type, $location, $created_by]);
@@ -18,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: manage_events.php");
     exit;
 }
+
 ?>
 
 <h1>Add New Event</h1>

@@ -2,6 +2,7 @@
 
 <?php
 require_once '../config/db.php';
+require_once 'admin_header.php';
 session_start();
 
 if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'super_admin'])) {

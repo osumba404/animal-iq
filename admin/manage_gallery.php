@@ -1,6 +1,7 @@
 <?php
 // admin/manage_gallery.php
 require_once '../includes/db.php';
+require_once 'admin_header.php';
 
 $stmt = $pdo->query("SELECT * FROM gallery ORDER BY created_at DESC");
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);

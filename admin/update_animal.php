@@ -2,6 +2,7 @@
 <!-- admin/update_animal.php -->
 <?php
 require_once '../includes/db.php';
+require_once 'admin_header.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Invalid request");

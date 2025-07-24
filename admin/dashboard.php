@@ -2,6 +2,7 @@
 <?php
 require '../includes/db.php';
 require '../includes/auth.php';
+require_once 'admin_header.php';
 
 function countTable($table, $where = '') {
     global $pdo;

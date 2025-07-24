@@ -3,14 +3,16 @@
 <?php
 require_once '../includes/db.php';
 require_once '../includes/header.php';
+require_once 'admin_header.php';
 
 
 $stmt = $pdo->query("
   SELECT posts.*, users.name AS author 
   FROM posts 
-  JOIN users ON posts.author_email = users.email 
+  JOIN users ON posts.author_id = users.id 
   ORDER BY posts.created_at DESC
 ");
+
 
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -31,7 +33,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <tr>
     <td><?= htmlspecialchars($post['title']) ?></td>
     <td><?= htmlspecialchars($post['author']) ?></td>
-    <td><?= htmlspecialchars($post['category']) ?></td>
+    <!-- <td><?= htmlspecialchars($post['category']) ?></td> -->
     <td><?= $post['created_at'] ?></td>
     <td><?= $post['status'] ?></td>
     <td>
