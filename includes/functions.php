@@ -58,13 +58,79 @@ function getAllApprovedAnimals($pdo, $limit = 10, $offset = 0, $category = null,
 
 
 
-
+// ==========gets user profile data
 function getUserProfile($pdo, $id) {
     $stmt = $pdo->prepare("SELECT id, name, email, registered_at, profile_picture FROM users WHERE id = :id LIMIT 1");
     $stmt->execute(['id' => $id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+
+
+
+
+
+
+// ========HOME PAGe
+function getRandomTrivia($pdo) {
+    $stmt = $pdo->query("SELECT fact FROM trivia ORDER BY RAND() LIMIT 1");
+    return $stmt->fetchColumn();
+}
+
+// function getLatestQuizzes($pdo, $limit = 3) {
+//     $stmt = $pdo->prepare("SELECT id, title FROM quizzes ORDER BY created_at DESC LIMIT ?");
+//     $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+//     $stmt->execute();
+//     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+// }
+
+// fetch quizes for public/quizzes.php
+function getLatestQuizzes(PDO $pdo, int $limit = 5): array {
+    $stmt = $pdo->prepare("SELECT * FROM quizzes WHERE is_published = 1 ORDER BY created_at DESC LIMIT :limit");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getApprovedBlogs($pdo, $limit = 3) {
+    $stmt = $pdo->prepare("
+        SELECT p.id, p.title, LEFT(p.body, 300) AS summary, u.name AS author_name
+        FROM posts p
+        JOIN users u ON p.author_id = u.id
+        WHERE p.type = 'blog' AND p.status = 'approved'
+        ORDER BY p.created_at DESC
+        LIMIT ?
+    ");
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getUpcomingEvents($pdo, $limit = 3) {
+    $stmt = $pdo->prepare("
+        SELECT id, title, event_date, location
+        FROM events
+        WHERE event_date >= NOW()
+        ORDER BY event_date ASC
+        LIMIT ?
+    ");
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getHighlightedEndangeredSpecies($pdo, $limit = 3) {
+    $stmt = $pdo->prepare("
+        SELECT common_name, main_photo
+        FROM animals
+        WHERE species_status = 'endangered'
+        ORDER BY RAND()
+        LIMIT ?
+    ");
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 

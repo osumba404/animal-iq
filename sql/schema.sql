@@ -152,6 +152,23 @@ CREATE TABLE quiz_scores (
     FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
 );
 
+
+--TRIVIA
+CREATE TABLE trivia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fact TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO trivia (fact) VALUES
+("A group of flamingos is called a 'flamboyance'."),
+("Octopuses have three hearts and blue blood."),
+("Elephants can recognize themselves in mirrors."),
+("Some lizards can squirt blood out of their eyes to scare predators."),
+("The fingerprints of a koala are so indistinguishable from humans that they can taint crime scenes.");
+
+
+
 -- GALLERY
 CREATE TABLE gallery (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -282,6 +299,12 @@ CREATE TABLE settings (
     `key` VARCHAR(100) UNIQUE,
     `value` TEXT
 );
+INSERT INTO settings (`key`, `value`) VALUES
+('site_vision', ''),
+('site_mission', ''),
+('site_logo', '')
+ON DUPLICATE KEY UPDATE `value` = `value`; 
+
 
 CREATE TABLE logs (
     id INT AUTO_INCREMENT PRIMARY KEY,

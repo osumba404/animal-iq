@@ -1,32 +1,26 @@
 <?php
-require_once '../includes/db.php';
 session_start();
+require_once '../includes/db.php';
 
-$email = trim($_POST['email']);
-$password = $_POST['password'];
+// Get form values
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
 
-// Fetch user from database
+// Lookup user
 $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->execute([$email]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$user = $stmt->fetch();
 
-if ($user && password_verify($password, $user['password_hash'])) {
-    // Set session
-    $_SESSION['user'] = [
-        'email' => $user['email'],
-        'name' => $user['name'],
-        'role' => $user['role']
-    ];
+if ($user && password_verify($password, $user['password'])) {
+    // Set session variables
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['name'];
 
-    // Update last_login time
-    $update = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE email = ?");
-    $update->execute([$email]);
-
-    // Redirect to homepage
-    header("Location: ../public/index.php");
+    // Redirect back to home
+    header('Location: ../public/index.php');
     exit;
 } else {
-    // Redirect back to login with error
-    header("Location: ../public/login.php?error=invalid_credentials&email=" . urlencode($email));
+    // Redirect back with error message
+    header("Location: ../public/login.php?error=Invalid credentials&email=" . urlencode($email));
     exit;
 }

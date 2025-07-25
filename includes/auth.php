@@ -1,3 +1,5 @@
+<!-- includes/auth.php -->
+
 <?php
 session_start();
 
