@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Kingdom Diversity</title>
+    <style>
+:root {
+    --primary-green: #013221;
+    --secondary-green: #10593c;
+    --accent-gold: #e8b824;
+    --light-beige: #FFF8E8;
+    --dark-brown: #1E1811;
+    --highlight-teal: #1a8a6a;
+    --neutral-gray: #D5CFC0;
+    --crisp-white: #FFFFFF;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-beige);
+    color: var(--dark-brown);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header with navigation */
+.header {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 1.5rem 2rem;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--neutral-gray);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--accent-gold);
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: var(--light-beige);
+    padding: 4rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom right, transparent 49%, var(--light-beige) 50%);
+}
+
+.hero h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+}
+
+/* Stats Grid */
+.stats-section {
+    padding: 4rem 2rem;
+    background-color: var(--crisp-white);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stat-card {
+    background: var(--light-beige);
+    border: 1px solid var(--neutral-gray);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--highlight-teal);
+    transition: width 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:hover::before {
+    width: 8px;
+}
+
+.stat-card h2 {
+    color: var(--primary-green);
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+}
+
+.stat-card p {
+    color: var(--dark-brown);
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Featured Species Section */
+.featured {
+    padding: 4rem 2rem;
+    background-color: var(--light-beige);
+}
+
+.featured-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.featured h2 {
+    text-align: center;
+    color: var(--primary-green);
+    font-size: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.featured h2::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: var(--accent-gold);
+    margin: 1rem auto 0;
+}
+
+.species-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.species-card {
+    background: var(--crisp-white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.species-card:hover {
+    transform: translateY(-10px);
+}
+
+.species-image {
+    height: 200px;
+    background-color: var(--neutral-gray);
+    background-size: cover;
+    background-position: center;
+}
+
+.species-info {
+    padding: 1.5rem;
+}
+
+.species-info h3 {
+    color: var(--primary-green);
+    margin-top: 0;
+}
+
+.species-info p {
+    color: var(--dark-brown);
+}
+
+.species-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    color: var(--secondary-green);
+    font-weight: 500;
+}
+
+/* Testimonial Section */
+.testimonials {
+    padding: 4rem 2rem;
+    background-color: var(--primary-green);
+    color: var(--light-beige);
+}
+
+.testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.testimonials h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 3rem;
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.testimonial-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    position: relative;
+}
+
+.testimonial-card::before {
+    content: """;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.1);
+    font-family: serif;
+}
+
+.testimonial-content {
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--accent-gold);
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark-brown);
+    font-weight: bold;
+}
+
+.author-info h4 {
+    margin: 0;
+    color: var(--accent-gold);
+}
+
+.author-info p {
+    margin: 0.2rem 0 0;
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+/* CTA Section */
+.cta {
+    padding: 4rem 2rem;
+    background-color: var(--secondary-green);
+    color: var(--light-beige);
+    text-align: center;
+}
+
+.cta-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.cta p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--primary-green);
+    color: var(--neutral-gray);
+    padding: 3rem 2rem 1.5rem;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.footer-column h3 {
+    color: var(--accent-gold);
+    margin-top: 0;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    color: var(--neutral-gray);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: var(--accent-gold);
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--light-beige);
+    transition: all 0.3s;
+}
+
+.social-links a:hover {
+    background-color: var(--accent-gold);
+    color: var(--dark-brown);
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.button {
+    background-color: var(--accent-gold);
+    color: var(--dark-brown);
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.button:hover {
+    background-color: var(--highlight-teal);
+    color: var(--light-beige);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button-outline {
+    background-color: transparent;
+    border: 2px solid var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.button-outline:hover {
+    background-color: var(--accent-gold);
+    color: var(--dark-brown);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-links {
+        gap: 1rem;
+    }
+    
+    .hero h2 {
+        font-size: 2rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Animal Kingdom</h1>
+            <nav class="nav-links">
+                <a href="#">Explore</a>
+                <a href="#">Learn</a>
+                <a href="#">Conservation</a>
+                <a href="#">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2>Discover Earth's Biodiversity</h2>
+        <p>Journey through the incredible diversity of life on our planet, from the smallest insects to the largest mammals.</p>
+        <button class="button">Begin Exploration</button>
+    </section>
+
+    <section class="stats-section">
+        <div class="stats">
+            <div class="stat-card">
+                <h2>6,353</h2>
+                <p>Mammal Species</p>
+            </div>
+            <div class="stat-card">
+                <h2>10,363</h2>
+                <p>Bird Species</p>
+            </div>
+            <div class="stat-card">
+                <h2>4,469</h2>
+                <p>Reptile Species</p>
+            </div>
+            <div class="stat-card">
+                <h2>3,497</h2>
+                <p>Fish Species</p>
+            </div>
+            <div class="stat-card">
+                <h2>1,227</h2>
+                <p>Insect Families</p>
+            </div>
+            <div class="stat-card">
+                <h2>491</h2>
+                <p>Mollusk Families</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured">
+        <div class="featured-container">
+            <h2>Featured Species</h2>
+            <div class="species-grid">
+                <div class="species-card">
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/600x400/?tiger')"></div>
+                    <div class="species-info">
+                        <h3>Bengal Tiger</h3>
+                        <p>The Bengal tiger is a majestic big cat native to the Indian subcontinent, known for its striking orange coat with black stripes.</p>
+                        <div class="species-meta">
+                            <span>Panthera tigris</span>
+                            <span>Endangered</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="species-card">
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/600x400/?eagle')"></div>
+                    <div class="species-info">
+                        <h3>Bald Eagle</h3>
+                        <p>The bald eagle, with its distinctive white head and tail, is a powerful bird of prey found in North America.</p>
+                        <div class="species-meta">
+                            <span>Haliaeetus leucocephalus</span>
+                            <span>Least Concern</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="species-card">
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/600x400/?frog')"></div>
+                    <div class="species-info">
+                        <h3>Red-Eyed Tree Frog</h3>
+                        <p>This colorful arboreal frog is known for its vibrant green body, blue-and-yellow striped sides, and striking red eyes.</p>
+                        <div class="species-meta">
+                            <span>Agalychnis callidryas</span>
+                            <span>Least Concern</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="testimonials-container">
+            <h2>What Experts Say</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"The diversity of life on Earth is not just beautiful—it's essential to the functioning of our planet's ecosystems. Every species plays a role."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JD</div>
+                        <div class="author-info">
+                            <h4>Dr. Jane Doe</h4>
+                            <p>Conservation Biologist</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"Protecting biodiversity means protecting ourselves. The intricate web of life supports everything from clean air to fertile soil."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">RS</div>
+                        <div class="author-info">
+                            <h4>Prof. Robert Smith</h4>
+                            <p>Ecologist</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"We've only documented about 20% of Earth's species. Imagine what wonders remain undiscovered in our planet's remaining wild places."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MT</div>
+                        <div class="author-info">
+                            <h4>Maria Thompson</h4>
+                            <p>Field Researcher</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="cta-container">
+            <h2>Join Our Conservation Efforts</h2>
+            <p>Help us protect Earth's incredible biodiversity for future generations. Every action counts.</p>
+            <button class="button">Get Involved</button>
+            <button class="button button-outline">Learn More</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Explore</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Species Database</a></li>
+                    <li><a href="#">Habitats</a></li>
+                    <li><a href="#">Conservation Status</a></li>
+                    <li><a href="#">Photo Gallery</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Learn</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Educational Resources</a></li>
+                    <li><a href="#">Research Papers</a></li>
+                    <li><a href="#">Species Spotlight</a></li>
+                    <li><a href="#">Glossary</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Get Involved</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Volunteer</a></li>
+                    <li><a href="#">Donate</a></li>
+                    <li><a href="#">Citizen Science</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Connect</h3>
+                <div class="social-links">
+                    <a href="#">FB</a>
+                    <a href="#">TW</a>
+                    <a href="#">IG</a>
+                    <a href="#">YT</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2023 Animal Kingdom Diversity Project. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
