@@ -1,141 +1,476 @@
-<!-- admin/edit_animal.php -->
-
 <?php
 require_once '../includes/db.php';
+require_once '../includes/functions.php';
 require_once 'admin_header.php';
 
 if (!isset($_GET['id'])) {
-    echo "<p style='color:red;'>No animal ID provided.</p>";
-    exit;
+    die("Animal ID is required.");
 }
 
 $animal_id = $_GET['id'];
+$success = isset($_GET['updated']);
 
-// Fetch animal data
-$animal = $pdo->prepare("SELECT * FROM animals WHERE id = ?");
-$animal->execute([$animal_id]);
-$animal = $animal->fetch();
+// Fetch current animal data
+$stmt = $pdo->prepare("SELECT * FROM animals WHERE id = ?");
+$stmt->execute([$animal_id]);
+$animal = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$animal) {
-    echo "<p style='color:red;'>Animal not found.</p>";
-    exit;
+    die("Animal not found.");
 }
 
-// Fetch related taxonomy, geography, and habits
-$taxonomy = $pdo->prepare("SELECT * FROM taxonomy WHERE animal_id = ?");
-$taxonomy->execute([$animal_id]);
-$taxonomy = $taxonomy->fetch();
+// Fetch species_id from taxonomy
+$taxonomy_stmt = $pdo->prepare("SELECT species_id FROM taxonomy WHERE animal_id = ?");
+$taxonomy_stmt->execute([$animal_id]);
+$taxonomy_row = $taxonomy_stmt->fetch(PDO::FETCH_ASSOC);
 
-$geo = $pdo->prepare("SELECT * FROM animal_geography WHERE animal_id = ?");
-$geo->execute([$animal_id]);
-$geo = $geo->fetch();
-
-$habits = $pdo->prepare("SELECT * FROM animal_habits WHERE animal_id = ?");
-$habits->execute([$animal_id]);
-$habits = $habits->fetch();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $common_name = $_POST['common_name'];
-    $scientific_name = $_POST['scientific_name'];
-    $population_estimate = $_POST['population_estimate'];
-    $species_status = $_POST['species_status'];
-    $avg_weight_kg = $_POST['avg_weight_kg'];
-    $avg_length_cm = $_POST['avg_length_cm'];
-    $appearance = $_POST['appearance'];
-
-    // Handle optional photo update
-    if (isset($_FILES['main_photo']) && $_FILES['main_photo']['error'] == 0) {
-        $upload_dir = '../assets/images/animals/';
-        $filename = time() . '_' . basename($_FILES['main_photo']['name']);
-        $filepath = $upload_dir . $filename;
-        move_uploaded_file($_FILES['main_photo']['tmp_name'], $filepath);
-        $main_photo = $filename;
-
-        $pdo->prepare("UPDATE animals SET main_photo = ? WHERE id = ?")->execute([$main_photo, $animal_id]);
-    }
-
-    // Update animal table
-    $pdo->prepare("UPDATE animals SET scientific_name=?, common_name=?, population_estimate=?, species_status=?, avg_weight_kg=?, avg_length_cm=?, appearance=? WHERE id=?")
-        ->execute([$scientific_name, $common_name, $population_estimate, $species_status, $avg_weight_kg, $avg_length_cm, $appearance, $animal_id]);
-
-    // Update taxonomy
-    $pdo->prepare("UPDATE taxonomy SET kingdom=?, phylum=?, class=?, `order`=?, family=?, genus=?, species=? WHERE animal_id=?")
-        ->execute([
-            $_POST['kingdom'], $_POST['phylum'], $_POST['class'], $_POST['order'],
-            $_POST['family'], $_POST['genus'], $_POST['species'], $animal_id
-        ]);
-
-    // Update geography
-    $pdo->prepare("UPDATE animal_geography SET continent=?, subcontinent=?, country=?, realm=?, biome=? WHERE animal_id=?")
-        ->execute([
-            $_POST['continent'], $_POST['subcontinent'], $_POST['country'],
-            $_POST['realm'], $_POST['biome'], $animal_id
-        ]);
-
-    // Update habits
-    $pdo->prepare("UPDATE animal_habits SET diet=?, mating_habits=?, behavior=?, habitat=? WHERE animal_id=?")
-        ->execute([
-            $_POST['diet'], $_POST['mating_habits'], $_POST['behavior'], $_POST['habitat'], $animal_id
-        ]);
-
-    echo "<p style='color:green;'>Animal updated successfully!</p>";
-    // Refresh data
-    header("Location: edit_animal.php?id=$animal_id&updated=1");
-    exit;
+if (!$taxonomy_row || !isset($taxonomy_row['species_id'])) {
+    die("Taxonomy data not found for this animal.");
 }
 
-if (isset($_GET['updated'])) {
-    echo "<p style='color:green;'>Changes saved successfully!</p>";
-}
+$species_id = $taxonomy_row['species_id'];
+
+// Fetch taxonomy values
+$species_stmt = $pdo->prepare("
+    SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
+           o.id AS order_id, c.id AS class_id, p.id AS phylum_id, k.id AS kingdom_id
+    FROM species s
+    JOIN genera g ON s.genus_id = g.id
+    JOIN families f ON g.family_id = f.id
+    JOIN orders o ON f.order_id = o.id
+    JOIN classes c ON o.class_id = c.id
+    JOIN phyla p ON c.phylum_id = p.id
+    JOIN kingdoms k ON p.kingdom_id = k.id
+    WHERE s.id = ?
+");
+$species_stmt->execute([$species_id]);
+$taxonomy = $species_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Fetch dropdown options
+$kingdoms = $pdo->query("SELECT * FROM kingdoms")->fetchAll(PDO::FETCH_ASSOC);
+$phyla = $pdo->query("SELECT * FROM phyla")->fetchAll(PDO::FETCH_ASSOC);
+$classes = $pdo->query("SELECT * FROM classes")->fetchAll(PDO::FETCH_ASSOC);
+$orders = $pdo->query("SELECT * FROM orders")->fetchAll(PDO::FETCH_ASSOC);
+$families = $pdo->query("SELECT * FROM families")->fetchAll(PDO::FETCH_ASSOC);
+$genera = $pdo->query("SELECT * FROM genera")->fetchAll(PDO::FETCH_ASSOC);
+$species = $pdo->query("SELECT * FROM species")->fetchAll(PDO::FETCH_ASSOC);
+$species_statuses = $pdo->query("SELECT * FROM species_statuses")->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch habits
+$habit_stmt = $pdo->prepare("SELECT * FROM animal_habits WHERE animal_id = ?");
+$habit_stmt->execute([$animal_id]);
+$habits = $habit_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Fetch geography
+$geo_stmt = $pdo->prepare("SELECT * FROM animal_geography WHERE animal_id = ?");
+$geo_stmt->execute([$animal_id]);
+$geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
-<h2>Edit Animal: <?= htmlspecialchars($animal['common_name']) ?></h2>
-<form method="post" enctype="multipart/form-data">
-    <h3>Basic Info</h3>
-    <label>Common Name: <input type="text" name="common_name" value="<?= htmlspecialchars($animal['common_name']) ?>" required></label><br>
-    <label>Scientific Name: <input type="text" name="scientific_name" value="<?= htmlspecialchars($animal['scientific_name']) ?>" required></label><br>
-    <label>Population Estimate: <input type="text" name="population_estimate" value="<?= htmlspecialchars($animal['population_estimate']) ?>"></label><br>
-    <label>Status:
-        <select name="species_status">
-            <?php
-            $statuses = ['least concern', 'vulnerable', 'endangered', 'extinct'];
-            foreach ($statuses as $status) {
-                $selected = ($animal['species_status'] === $status) ? 'selected' : '';
-                echo "<option value='$status' $selected>$status</option>";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Animal - Admin Panel</title>
+    <link rel="stylesheet" href="../assets/css/admin-style.css">
+    <link rel="stylesheet" href="../assets/css/tables.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-content-container {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-back {
+            background-color: var(--color-neutral-mid);
+            color: var(--color-primary-dark);
+        }
+        
+        .btn-back:hover {
+            background-color: var(--color-primary-mid);
+        }
+        
+        .btn-primary {
+            background-color: var(--color-primary-accent);
+            color: var(--color-primary-light);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--color-secondary-accent);
+        }
+        
+        .form-container {
+            background-color: var(--color-neutral-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--color-primary-dark);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-neutral-mid);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+        }
+        
+        .animal-photo {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--color-neutral-mid);
+            margin-top: 0.5rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        
+        .section-divider {
+            margin: 2rem 0;
+            border: 0;
+            height: 1px;
+            background-color: var(--color-neutral-mid);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-content-container {
+                margin-left: 0;
+                padding: 1rem;
             }
-            ?>
-        </select>
-    </label><br>
-    <label>Avg Weight (kg): <input type="number" step="0.1" name="avg_weight_kg" value="<?= htmlspecialchars($animal['avg_weight_kg']) ?>"></label><br>
-    <label>Avg Length (cm): <input type="number" step="0.1" name="avg_length_cm" value="<?= htmlspecialchars($animal['avg_length_cm']) ?>"></label><br>
-    <label>Appearance:<br><textarea name="appearance" rows="4" cols="40"><?= htmlspecialchars($animal['appearance']) ?></textarea></label><br>
-    <label>Main Photo (leave blank to keep current): <input type="file" name="main_photo" accept="image/*"></label><br>
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-content-container">
+        <div class="page-header">
+            <h1><i class="fas fa-paw"></i> Edit Animal: <?= htmlspecialchars($animal['common_name']) ?></h1>
+            <a href="manage_animals.php" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Animals
+            </a>
+        </div>
 
-    <h3>Taxonomy</h3>
-    <label>Kingdom: <input type="text" name="kingdom" value="<?= $taxonomy['kingdom'] ?>"></label><br>
-    <label>Phylum: <input type="text" name="phylum" value="<?= $taxonomy['phylum'] ?>"></label><br>
-    <label>Class: <input type="text" name="class" value="<?= $taxonomy['class'] ?>"></label><br>
-    <label>Order: <input type="text" name="order" value="<?= $taxonomy['order'] ?>"></label><br>
-    <label>Family: <input type="text" name="family" value="<?= $taxonomy['family'] ?>"></label><br>
-    <label>Genus: <input type="text" name="genus" value="<?= $taxonomy['genus'] ?>"></label><br>
-    <label>Species: <input type="text" name="species" value="<?= $taxonomy['species'] ?>"></label><br>
+        <?php if ($success): ?>
+            <div class="alert-success">
+                <i class="fas fa-check-circle"></i> Animal updated successfully.
+            </div>
+        <?php endif; ?>
 
-    <h3>Geography</h3>
-    <label>Continent: <input type="text" name="continent" value="<?= $geo['continent'] ?>"></label><br>
-    <label>Subcontinent: <input type="text" name="subcontinent" value="<?= $geo['subcontinent'] ?>"></label><br>
-    <label>Country: <input type="text" name="country" value="<?= $geo['country'] ?>"></label><br>
-    <label>Realm: <input type="text" name="realm" value="<?= $geo['realm'] ?>"></label><br>
-    <label>Biome: <input type="text" name="biome" value="<?= $geo['biome'] ?>"></label><br>
+        <div class="form-container">
+            <form method="POST" action="update_animal.php" enctype="multipart/form-data">
+                <input type="hidden" name="id" value="<?= $animal_id ?>">
 
-    <h3>Habits</h3>
-    <label>Diet:<br><textarea name="diet" rows="3" cols="40"><?= $habits['diet'] ?></textarea></label><br>
-    <label>Mating Habits:<br><textarea name="mating_habits" rows="3" cols="40"><?= $habits['mating_habits'] ?></textarea></label><br>
-    <label>Behavior:<br><textarea name="behavior" rows="3" cols="40"><?= $habits['behavior'] ?></textarea></label><br>
-    <label>Habitat:<br><textarea name="habitat" rows="3" cols="40"><?= $habits['habitat'] ?></textarea></label><br>
+                <div class="form-group">
+                    <label>Scientific Name</label>
+                    <input type="text" name="scientific_name" value="<?= htmlspecialchars($animal['scientific_name']) ?>" required>
+                </div>
 
-    <button type="submit">Update Animal</button>
-</form>
+                <div class="form-group">
+                    <label>Common Name</label>
+                    <input type="text" name="common_name" value="<?= htmlspecialchars($animal['common_name']) ?>" required>
+                </div>
 
-<p><a href="manage_animals.php">← Back to Animals</a></p>
+                <div class="form-group">
+                    <label>Population Estimate</label>
+                    <input type="text" name="population_estimate" value="<?= htmlspecialchars($animal['population_estimate']) ?>">
+                </div>
 
-<?php require_once '../includes/footer.php'; ?>
+                <div class="form-group">
+                    <label>Species Status</label>
+                    <select name="species_status_id">
+                        <?php foreach ($species_statuses as $status): ?>
+                            <option value="<?= $status['id'] ?>" <?= $status['id'] == $animal['species_status_id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars(ucfirst($status['label'])) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Average Weight (kg)</label>
+                    <input type="number" step="0.01" name="avg_weight_kg" value="<?= htmlspecialchars($animal['avg_weight_kg']) ?>">
+                </div>
+
+                <div class="form-group">
+                    <label>Average Length (cm)</label>
+                    <input type="number" step="0.01" name="avg_length_cm" value="<?= htmlspecialchars($animal['avg_length_cm']) ?>">
+                </div>
+
+                <div class="form-group">
+                    <label>Appearance</label>
+                    <textarea name="appearance"><?= htmlspecialchars($animal['appearance']) ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Main Photo</label>
+                    <input type="file" name="main_photo">
+                    <?php if (!empty($animal['main_photo'])): ?>
+                        <img src="../assets/images/animals/<?= htmlspecialchars($animal['main_photo']) ?>" class="animal-photo" alt="Animal Photo">
+                    <?php endif; ?>
+                </div>
+
+                <hr class="section-divider">
+
+                <h2><i class="fas fa-sitemap"></i> Taxonomy</h2>
+
+                <div class="form-group">
+                    <label>Kingdom</label>
+                    <select name="kingdom_id">
+                        <?php foreach ($kingdoms as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['kingdom_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Phylum</label>
+                    <select name="phylum_id" id="phylum-select">
+                        <option value="">-- Select Phylum --</option>
+                        <?php foreach ($phyla as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['phylum_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Class</label>
+                    <select name="class_id" id="class-select">
+                        <option value="">-- Select Class --</option>
+                        <?php foreach ($classes as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['class_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Order</label>
+                    <select name="order_id" id="order-select">
+                        <option value="">-- Select Order --</option>
+                        <?php foreach ($orders as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['order_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Family</label>
+                    <select name="family_id" id="family-select">
+                        <option value="">-- Select Family --</option>
+                        <?php foreach ($families as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['family_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Genus</label>
+                    <select name="genus_id" id="genus-select">
+                        <option value="">-- Select Genus --</option>
+                        <?php foreach ($genera as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['genus_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Species</label>
+                    <select name="species_id" required>
+                        <option value="">-- Select Species --</option>
+                        <?php foreach ($species as $item): ?>
+                            <option value="<?= $item['id'] ?>" <?= $taxonomy['species_id'] == $item['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($item['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <hr class="section-divider">
+
+                <h2><i class="fas fa-leaf"></i> Habits</h2>
+
+                <div class="form-group">
+                    <label>Diet</label>
+                    <textarea name="habits[diet]"><?= htmlspecialchars($habits['diet'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Mating Habits</label>
+                    <textarea name="habits[mating_habits]"><?= htmlspecialchars($habits['mating_habits'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Behavior</label>
+                    <textarea name="habits[behavior]"><?= htmlspecialchars($habits['behavior'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Habitat</label>
+                    <textarea name="habits[habitat]"><?= htmlspecialchars($habits['habitat'] ?? '') ?></textarea>
+                </div>
+
+                <hr class="section-divider">
+
+                <h2><i class="fas fa-globe-americas"></i> Geography</h2>
+
+                <div class="form-group">
+                    <label>Continent</label>
+                    <input type="text" name="geography[continent]" value="<?= htmlspecialchars($geo['continent'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label>Subcontinent</label>
+                    <input type="text" name="geography[subcontinent]" value="<?= htmlspecialchars($geo['subcontinent'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" name="geography[country]" value="<?= htmlspecialchars($geo['country'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label>Realm</label>
+                    <input type="text" name="geography[realm]" value="<?= htmlspecialchars($geo['realm'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label>Biome</label>
+                    <input type="text" name="geography[biome]" value="<?= htmlspecialchars($geo['biome'] ?? '') ?>">
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Animal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function loadTaxonomy(type, parentId, targetSelect, selectedId = null) {
+            if (!parentId) {
+                targetSelect.innerHTML = '<option value="">-- Select --</option>';
+                return;
+            }
+
+            fetch(`../ajax/load_taxonomy_level.php?type=${type}&parent_id=${parentId}`)
+                .then(res => res.json())
+                .then(data => {
+                    targetSelect.innerHTML = '<option value="">-- Select --</option>';
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        if (selectedId && item.id == selectedId) {
+                            option.selected = true;
+                        }
+                        targetSelect.appendChild(option);
+                    });
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const kingdomSelect = document.querySelector('select[name="kingdom_id"]');
+            const phylumSelect = document.getElementById('phylum-select');
+            const classSelect = document.getElementById('class-select');
+            const orderSelect = document.getElementById('order-select');
+            const familySelect = document.getElementById('family-select');
+            const genusSelect = document.getElementById('genus-select');
+            const speciesSelect = document.getElementById('species-select');
+
+            kingdomSelect.addEventListener('change', function () {
+                loadTaxonomy('phyla', this.value, phylumSelect);
+                classSelect.innerHTML = '<option value="">-- Select --</option>';
+                orderSelect.innerHTML = '<option value="">-- Select --</option>';
+                familySelect.innerHTML = '<option value="">-- Select --</option>';
+                genusSelect.innerHTML = '<option value="">-- Select --</option>';
+                speciesSelect.innerHTML = '<option value="">-- Select --</option>';
+            });
+
+            phylumSelect.addEventListener('change', function () {
+                loadTaxonomy('classes', this.value, classSelect);
+                orderSelect.innerHTML = '<option value="">-- Select --</option>';
+                familySelect.innerHTML = '<option value="">-- Select --</option>';
+                genusSelect.innerHTML = '<option value="">-- Select --</option>';
+                speciesSelect.innerHTML = '<option value="">-- Select --</option>';
+            });
+
+            classSelect.addEventListener('change', function () {
+                loadTaxonomy('orders', this.value, orderSelect);
+                familySelect.innerHTML = '<option value="">-- Select --</option>';
+                genusSelect.innerHTML = '<option value="">-- Select --</option>';
+                speciesSelect.innerHTML = '<option value="">-- Select --</option>';
+            });
+
+            orderSelect.addEventListener('change', function () {
+                loadTaxonomy('families', this.value, familySelect);
+                genusSelect.innerHTML = '<option value="">-- Select --</option>';
+                speciesSelect.innerHTML = '<option value="">-- Select --</option>';
+            });
+
+            familySelect.addEventListener('change', function () {
+                loadTaxonomy('genera', this.value, genusSelect);
+                speciesSelect.innerHTML = '<option value="">-- Select --</option>';
+            });
+
+            genusSelect.addEventListener('change', function () {
+                loadTaxonomy('species', this.value, speciesSelect);
+            });
+        });
+    </script>
+</body>
+</html>

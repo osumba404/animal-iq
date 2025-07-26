@@ -1,0 +1,302 @@
+/* public/assets/css/style.css */
+
+
+/* ======= dashboard.php ======= */
+
+/* Admin-specific styles */
+/* Admin Layout */
+.admin-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    background-color: var(--color-primary-dark);
+    padding: 1.5rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.admin-main {
+    padding: 2rem;
+    background-color: var(--color-neutral-light);
+}
+
+/* Dashboard Cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-card {
+    background: var(--color-primary-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-card h3 {
+    color: var(--color-primary-accent);
+    margin-top: 0;
+    font-size: 1.1rem;
+}
+
+.dashboard-card p {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+    color: var(--color-primary-dark);
+}
+
+/* Recent Items */
+.recent-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.recent-item-card {
+    background: var(--color-primary-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recent-item-card h3 {
+    border-bottom: 1px solid var(--color-neutral-mid);
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.recent-item-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recent-item-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-neutral-mid);
+}
+
+.recent-item-card li:last-child {
+    border-bottom: none;
+}
+
+/* Sidebar Navigation */
+.admin-nav {
+    margin-top: 2rem;
+}
+
+.admin-nav a {
+    display: block;
+    color: var(--color-primary-light);
+    padding: 0.75rem 0;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.admin-nav a:hover {
+    color: var(--color-primary-mid);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-sidebar {
+        height: auto;
+        position: relative;
+    }
+}
+
+
+
+
+
+
+/* ====== manage_animals.php */
+/* Admin content styles */
+.admin-content-container {
+    padding: 2.5rem;
+    margin-left: var(--sidebar-width);
+    /* padding: 20px; */
+    /* min-height: 100vh; */
+}
+
+.admin-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Search styles */
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.search-form {
+    max-width: 600px;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-input-group input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-neutral-mid);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Button styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn i {
+    font-size: 0.9em;
+}
+
+.btn-back {
+    background-color: var(--color-neutral-mid);
+    color: var(--color-primary-dark);
+}
+
+.btn-back:hover {
+    background-color: var(--color-primary-mid);
+}
+
+.btn-primary {
+    background-color: var(--color-primary-accent);
+    color: var(--color-primary-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-secondary-accent);
+    transform: translateY(-2px);
+}
+
+.btn-search {
+    background-color: var(--color-primary-dark);
+    color: var(--color-primary-light);
+}
+
+.btn-clear {
+    background-color: var(--color-neutral-mid);
+    color: var(--color-primary-dark);
+}
+
+/* Animal specific styles */
+.animal-thumbnail img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    border: 1px solid var(--color-neutral-mid);
+}
+
+.animal-photos {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.animal-photos img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--color-neutral-mid);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--color-neutral-light);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--color-primary-dark);
+}
+
+.animal-size {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.animal-size span {
+    white-space: nowrap;
+}
+
+.taxonomy {
+    font-size: 0.85rem;
+    color: var(--color-primary-dark);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-content-container {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    
+    .admin-content-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .search-input-group {
+        flex-direction: column;
+    }
+    
+    .search-input-group input,
+    .search-input-group button {
+        width: 100%;
+    }
+}
+
+
+
+
+
+
+/* ====== galery */

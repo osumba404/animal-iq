@@ -1,0 +1,79 @@
+/* public/assets/css/main.css */
+
+:root {
+  /* Primary palette */
+  --color-primary-light: #FFFEF7;
+  --color-primary-mid: #D1CFB1;
+  --color-primary-dark: #3E3E2B; /* WCAG AA compliant text */
+  --color-primary-accent: #4F5D2F; /* WCAG AA compliant button */
+  --color-secondary-accent: #7A6A2F;
+  
+  /* Neutrals */
+  --color-neutral-light: #F8F7F0;
+  --color-neutral-mid: #E8E7DC;
+  --color-neutral-dark: #242414; /* Near-black for headings */
+}
+
+body {
+  font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+  font-weight: normal;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+  font-weight: normal;
+}
+
+.main-background {
+  background-color: var(--color-primary-light);
+}
+
+.secondary-background {
+  background-color: var(--color-primary-mid);
+}
+
+.card-background {
+  background-color: var(--color-neutral-light);
+}
+
+.primary-text {
+  color: var(--color-primary-dark);
+}
+
+.heading-text {
+  color: var(--color-primary-accent);
+}
+
+.light-text {
+  color: var(--color-primary-mid);
+}
+
+.inverted-text {
+  color: var(--color-primary-light);
+}
+
+.primary-button {
+  background-color: var(--color-primary-accent);
+  color: var(--color-primary-light);
+}
+
+.secondary-button {
+  background-color: var(--color-primary-mid);
+  color: var(--color-primary-dark);
+}
+
+.link {
+  color: var(--color-primary-accent);
+}
+
+.border {
+  border-color: var(--color-primary-mid);
+}
+
+.divider {
+  border-color: var(--color-neutral-mid);
+}

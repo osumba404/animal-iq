@@ -31,13 +31,23 @@ CREATE TABLE admins (
 );
 
 
--- ANIMALS
+-- Status lookup table
+CREATE TABLE species_statuses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    label VARCHAR(100) UNIQUE NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+-- Main animals table
 CREATE TABLE animals (
     id INT PRIMARY KEY AUTO_INCREMENT,
     scientific_name VARCHAR(255),
     common_name VARCHAR(255),
     population_estimate VARCHAR(255),
-    species_status ENUM('extinct', 'endangered', 'vulnerable', 'least concern') DEFAULT 'least concern',
+    species_status_id INT,
     avg_weight_kg FLOAT,
     avg_length_cm FLOAT,
     appearance TEXT,
@@ -49,26 +59,101 @@ CREATE TABLE animals (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (submitted_by) REFERENCES users(id),
-    FOREIGN KEY (approved_by) REFERENCES users(id)
+    FOREIGN KEY (approved_by) REFERENCES users(id),
+    FOREIGN KEY (species_status_id) REFERENCES species_statuses(id)
 );
 
+-- Taxonomy hierarchy tables (all with the same structure)
+CREATE TABLE kingdoms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+CREATE TABLE phyla (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kingdom_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (kingdom_id) REFERENCES kingdoms(id),
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+--- Taxonomy hierarchy tables (all with consistent structure)
+CREATE TABLE classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    phylum_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (phylum_id) REFERENCES phyla(id),
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (class_id) REFERENCES classes(id),
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+CREATE TABLE families (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+CREATE TABLE genera (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    family_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (family_id) REFERENCES families(id),
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+CREATE TABLE species (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    genus_id INT,
+    name VARCHAR(100) NOT NULL,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (genus_id) REFERENCES genera(id),
+    FOREIGN KEY (created_by) REFERENCES admins(id)
+);
+
+-- Taxonomy mapping
+CREATE TABLE taxonomy (
+    animal_id INT PRIMARY KEY,
+    species_id INT,
+    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE,
+    FOREIGN KEY (species_id) REFERENCES species(id)
+);
+
+-- Animal details tables
 CREATE TABLE animal_photos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     animal_id INT,
     photo_url VARCHAR(255),
     caption TEXT,
-    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
-);
-
-CREATE TABLE taxonomy (
-    animal_id INT PRIMARY KEY,
-    kingdom VARCHAR(255),
-    phylum VARCHAR(255),
-    class VARCHAR(255),
-    `order` VARCHAR(255),
-    family VARCHAR(255),
-    genus VARCHAR(255),
-    species VARCHAR(255),
     FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
 );
 
@@ -91,6 +176,21 @@ CREATE TABLE animal_habits (
     habitat TEXT,
     FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
 );
+
+
+-- CREATE TABLE taxonomy (
+--     animal_id INT PRIMARY KEY,
+--     kingdom VARCHAR(255),
+--     phylum VARCHAR(255),
+--     class VARCHAR(255),
+--     `order` VARCHAR(255),
+--     family VARCHAR(255),
+--     genus VARCHAR(255),
+--     species VARCHAR(255),
+--     FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
+-- );
+
+
 
 -- POSTS & COMMENTS
 CREATE TABLE posts (

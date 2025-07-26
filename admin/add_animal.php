@@ -1,113 +1,176 @@
-<!-- admin/add_animal.php -->
-
 <?php
-require_once '../includes/db.php';
-require_once 'admin_header.php';
+require '../includes/db.php';
+session_start();
+$created_by = $_SESSION['admin_id'] ?? 1;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $common_name = $_POST['common_name'];
-    $scientific_name = $_POST['scientific_name'];
-    $population_estimate = $_POST['population_estimate'];
-    $species_status = $_POST['species_status'];
-    $avg_weight_kg = $_POST['avg_weight_kg'];
-    $avg_length_cm = $_POST['avg_length_cm'];
-    $appearance = $_POST['appearance'];
-    $submitted_by = 1; // Replace with admin ID from session if using authentication
+// Fetch Kingdoms
+$kingdoms = $pdo->query("SELECT id, name FROM kingdoms ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
-    // Handle image upload
-    $main_photo = '';
-    if (isset($_FILES['main_photo']) && $_FILES['main_photo']['error'] == 0) {
-        $upload_dir = '../assets/images/animals/';
-        $filename = time() . '_' . basename($_FILES['main_photo']['name']);
-        $filepath = $upload_dir . $filename;
-        move_uploaded_file($_FILES['main_photo']['tmp_name'], $filepath);
-        $main_photo = $filename;
-    }
-
-    // Insert into animals table
-    $stmt = $pdo->prepare("INSERT INTO animals 
-        (scientific_name, common_name, population_estimate, species_status, avg_weight_kg, avg_length_cm, appearance, main_photo, submitted_by) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([
-        $scientific_name, $common_name, $population_estimate, $species_status,
-        $avg_weight_kg, $avg_length_cm, $appearance, $main_photo, $submitted_by
-    ]);
-
-    $animal_id = $pdo->lastInsertId();
-
-    // Taxonomy
-    $stmt = $pdo->prepare("INSERT INTO taxonomy (animal_id, kingdom, phylum, class, `order`, family, genus, species)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([
-        $animal_id,
-        $_POST['kingdom'], $_POST['phylum'], $_POST['class'], $_POST['order'],
-        $_POST['family'], $_POST['genus'], $_POST['species']
-    ]);
-
-    // Geography
-    $stmt = $pdo->prepare("INSERT INTO animal_geography (animal_id, continent, subcontinent, country, realm, biome)
-        VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute([
-        $animal_id,
-        $_POST['continent'], $_POST['subcontinent'], $_POST['country'], $_POST['realm'], $_POST['biome']
-    ]);
-
-    // Habits
-    $stmt = $pdo->prepare("INSERT INTO animal_habits (animal_id, diet, mating_habits, behavior, habitat)
-        VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([
-        $animal_id,
-        $_POST['diet'], $_POST['mating_habits'], $_POST['behavior'], $_POST['habitat']
-    ]);
-
-    echo "<p style='color:green;'>Animal added successfully!</p>";
-}
+// Fetch Species Statuses
+$statuses = $pdo->query("SELECT id, label FROM species_statuses ORDER BY FIELD(label, 'extinct', 'endangered', 'vulnerable', 'least concern')")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Animal</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
 <h2>Add New Animal</h2>
-<form method="post" enctype="multipart/form-data">
-    <h3>Basic Info</h3>
-    <label>Common Name: <input type="text" name="common_name" required></label><br>
-    <label>Scientific Name: <input type="text" name="scientific_name" required></label><br>
-    <label>Population Estimate: <input type="text" name="population_estimate"></label><br>
-    <label>Status:
-        <select name="species_status">
-            <option value="least concern">Least Concern</option>
-            <option value="vulnerable">Vulnerable</option>
-            <option value="endangered">Endangered</option>
-            <option value="extinct">Extinct</option>
-        </select>
-    </label><br>
-    <label>Avg Weight (kg): <input type="number" step="0.1" name="avg_weight_kg"></label><br>
-    <label>Avg Length (cm): <input type="number" step="0.1" name="avg_length_cm"></label><br>
-    <label>Appearance:<br><textarea name="appearance" rows="4" cols="40"></textarea></label><br>
-    <label>Main Photo: <input type="file" name="main_photo" accept="image/*"></label><br>
 
-    <h3>Taxonomy</h3>
-    <label>Kingdom: <input type="text" name="kingdom"></label><br>
-    <label>Phylum: <input type="text" name="phylum"></label><br>
-    <label>Class: <input type="text" name="class"></label><br>
-    <label>Order: <input type="text" name="order"></label><br>
-    <label>Family: <input type="text" name="family"></label><br>
-    <label>Genus: <input type="text" name="genus"></label><br>
-    <label>Species: <input type="text" name="species"></label><br>
+<form action="insert_animal.php" method="POST" enctype="multipart/form-data">
+  <label>Common Name:</label>
+  <input type="text" name="common_name" required><br>
 
-    <h3>Geography</h3>
-    <label>Continent: <input type="text" name="continent"></label><br>
-    <label>Subcontinent: <input type="text" name="subcontinent"></label><br>
-    <label>Country: <input type="text" name="country"></label><br>
-    <label>Realm: <input type="text" name="realm"></label><br>
-    <label>Biome: <input type="text" name="biome"></label><br>
+  <label>Scientific Name:</label>
+  <input type="text" name="scientific_name" required><br>
 
-    <h3>Habits</h3>
-    <label>Diet:<br><textarea name="diet" rows="3" cols="40"></textarea></label><br>
-    <label>Mating Habits:<br><textarea name="mating_habits" rows="3" cols="40"></textarea></label><br>
-    <label>Behavior:<br><textarea name="behavior" rows="3" cols="40"></textarea></label><br>
-    <label>Habitat:<br><textarea name="habitat" rows="3" cols="40"></textarea></label><br>
+  <label>Species Conservation Status:</label>
+  <select name="species_status_id" required>
+    <option value="">Select Status</option>
+    <?php foreach ($statuses as $status): ?>
+      <option value="<?= $status['id'] ?>"><?= htmlspecialchars($status['label']) ?></option>
+    <?php endforeach; ?>
+  </select><br>
 
-    <button type="submit">Save Animal</button>
+  <label>Kingdom:</label>
+  <select name="kingdom_id" id="kingdom" required>
+    <option value="">Select Kingdom</option>
+    <?php foreach ($kingdoms as $row): ?>
+      <option value="<?= $row['id'] ?>"><?= htmlspecialchars($row['name']) ?></option>
+    <?php endforeach; ?>
+  </select><br>
+
+  <label>Phylum:</label>
+  <select name="phylum_id" id="phylum" required></select><br>
+
+  <label>Class:</label>
+  <select name="class_id" id="class_tax" required></select><br>
+
+  <label>Order:</label>
+  <select name="order_id" id="order" required></select><br>
+
+  <label>Family:</label>
+  <select name="family_id" id="family" required></select><br>
+
+  <label>Genus:</label>
+  <select name="genus_id" id="genus" required></select><br>
+
+  <label>Species:</label>
+  <select name="species_id" id="species" required></select><br>
+
+  <label>Population Estimate:</label>
+  <input type="text" name="population_estimate"><br>
+
+  <label>Average Weight (kg):</label>
+  <input type="number" step="0.01" name="avg_weight_kg"><br>
+
+  <label>Average Length (cm):</label>
+  <input type="number" step="0.01" name="avg_length_cm"><br>
+
+  <label>Appearance:</label>
+  <textarea name="appearance"></textarea><br>
+
+  <label>Main Photo:</label>
+  <input type="file" name="main_photo"><br><br>
+
+  <!-- Additional Data Tabs -->
+  <fieldset>
+    <legend>Animal Habits</legend>
+    <label>Diet:</label><br>
+    <textarea name="diet"></textarea><br>
+    <label>Mating Habits:</label><br>
+    <textarea name="mating_habits"></textarea><br>
+    <label>Behavior:</label><br>
+    <textarea name="behavior"></textarea><br>
+    <label>Habitat:</label><br>
+    <textarea name="habitat"></textarea><br>
+  </fieldset>
+  <br>
+
+  <fieldset>
+    <legend>Geography</legend>
+    <label>Continent(s):</label><input type="text" name="continent"><br>
+    <label>Subcontinent(s):</label><input type="text" name="subcontinent"><br>
+    <label>Country(s):</label><input type="text" name="country"><br>
+    <label>Realm:</label><input type="text" name="realm"><br>
+    <label>Biome:</label><input type="text" name="biome"><br>
+  </fieldset>
+  <br>
+
+  <fieldset>
+    <legend>Additional Photos</legend>
+    <label>Photo 1:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
+    <label>Photo 2:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
+    <label>Photo 3:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
+  </fieldset>
+
+  <br><input type="submit" value="Add Animal">
 </form>
 
-<p><a href="manage_animals.php">← Back to Animals</a></p>
+<script>
+$(document).ready(function () {
+  const levels = ['kingdom', 'phylum', 'class_tax', 'order', 'family', 'genus', 'species'];
 
-<?php require_once '../includes/footer.php'; ?>
+  function loadNext(level, parentId) {
+    if (!parentId) {
+      $('#' + level).html('<option value="">Select</option>');
+      return;
+    }
+
+    $.ajax({
+      type: 'POST',
+      url: 'load_taxonomy.php',
+      data: { level: level === 'class_tax' ? 'class' : level, parent_id: parentId },
+      success: function (data) {
+        const options = JSON.parse(data);
+        let html = '<option value="">Select</option>';
+        options.forEach(item => {
+          html += `<option value="${item.id}">${item.name}</option>`;
+        });
+        $('#' + level).html(html);
+        clearLower(level);
+      },
+      error: function () {
+        alert('Failed to fetch ' + level);
+      }
+    });
+  }
+
+  function clearLower(current) {
+    const index = levels.indexOf(current);
+    for (let i = index + 1; i < levels.length; i++) {
+      $('#' + levels[i]).html('<option value="">Select</option>');
+    }
+  }
+
+  $('#kingdom').change(function () {
+    loadNext('phylum', $(this).val());
+  });
+
+  $('#phylum').change(function () {
+    loadNext('class_tax', $(this).val());
+  });
+
+  $('#class_tax').change(function () {
+    loadNext('order', $(this).val());
+  });
+
+  $('#order').change(function () {
+    loadNext('family', $(this).val());
+  });
+
+  $('#family').change(function () {
+    loadNext('genus', $(this).val());
+  });
+
+  $('#genus').change(function () {
+    loadNext('species', $(this).val());
+  });
+});
+</script>
+
+</body>
+</html>

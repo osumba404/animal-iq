@@ -1,0 +1,86 @@
+/* tables.css - Reusable table styles */
+
+/* Base table styles */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.data-table thead tr {
+    background-color: var(--color-primary-accent);
+    color: var(--color-primary-light);
+    text-align: left;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px 15px;
+    border: 1px solid var(--color-neutral-mid);
+}
+
+.data-table tbody tr {
+    border-bottom: 1px solid var(--color-neutral-mid);
+    background-color: var(--color-primary-light);
+    transition: all 0.2s ease;
+}
+
+.data-table tbody tr:nth-of-type(even) {
+    background-color: var(--color-neutral-light);
+}
+
+.data-table tbody tr:last-of-type {
+    border-bottom: 2px solid var(--color-primary-accent);
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--color-neutral-mid);
+    transform: translateX(2px);
+}
+
+/* Compact table variant */
+.data-table.compact th,
+.data-table.compact td {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+}
+
+/* Table actions */
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.table-actions a {
+    color: var(--color-primary-accent);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.table-actions a:hover {
+    background-color: var(--color-primary-accent);
+    color: var(--color-primary-light);
+}
+
+.table-actions a.delete {
+    color: #e74c3c;
+}
+
+.table-actions a.delete:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Empty table state */
+.data-table-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-primary-mid);
+    background-color: var(--color-neutral-light);
+}
