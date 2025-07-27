@@ -178,19 +178,6 @@ CREATE TABLE animal_habits (
 );
 
 
--- CREATE TABLE taxonomy (
---     animal_id INT PRIMARY KEY,
---     kingdom VARCHAR(255),
---     phylum VARCHAR(255),
---     class VARCHAR(255),
---     `order` VARCHAR(255),
---     family VARCHAR(255),
---     genus VARCHAR(255),
---     species VARCHAR(255),
---     FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
--- );
-
-
 
 -- POSTS & COMMENTS
 CREATE TABLE posts (

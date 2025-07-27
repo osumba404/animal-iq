@@ -1,5 +1,7 @@
 <!-- public/header.php -->
 
+
+
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -25,16 +27,61 @@ if (isset($_SESSION['user']) && !empty($_SESSION['user']['name'])) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title><?= htmlspecialchars($page_title) ?></title>
-    <link rel="stylesheet" href="/public/assets/css/style.css">
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        /* Header-specific styles */
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            margin: 0;
+            padding: 0;
+            font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+        }
+        
+        .header-container {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-inverted);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--color-text-inverted);
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        .brand-logo:hover {
+            color: var(--color-accent-primary);
+        }
+        
+        .user-initial-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--color-accent-primary);
+            color: var(--color-primary-dark);
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-
-<!-- <header class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="/public/index.php" class="text-2xl font-bold text-blue-600 hover:text-blue-800 transition">
+<body>
+    <div class="header-container">
+        <!-- <a href="/public/index.php" class="brand-logo">
             Animal IQ
-        </a>
-
+        </a> -->
+        
+        <?php if (!empty($userInitial)): ?>
+            <div class="user-initial-circle"><?= $userInitial ?></div>
+        <?php endif; ?>
     </div>
-</header> -->

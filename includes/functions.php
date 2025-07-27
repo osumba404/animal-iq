@@ -23,27 +23,57 @@ function is_logged_in() {
 }
 
 
+
+// FETCHING APPROVED ANImals
 function getAllApprovedAnimals($pdo, $limit = 10, $offset = 0, $category = null, $search = '')
 {
-    $sql = "SELECT animals.*, taxonomy.family, taxonomy.genus
-            FROM animals
-            LEFT JOIN taxonomy ON animals.id = taxonomy.animal_id
-            WHERE animals.status = 'approved'";
-    
+    $sql = "SELECT 
+                a.id,
+                a.common_name,
+                a.scientific_name,
+                a.population_estimate,
+                a.avg_weight_kg,
+                a.avg_length_cm,
+                a.appearance,
+                a.main_photo,
+                a.status,
+                a.is_animal_of_the_day,
+                a.created_at,
+                ss.label AS species_status,
+                
+                sp.name AS species,
+                g.name AS genus,
+                f.name AS family,
+                o.name AS `order`,
+                c.name AS class,
+                p.name AS phylum,
+                k.name AS kingdom
+
+            FROM animals a
+            LEFT JOIN species_statuses ss ON a.species_status_id = ss.id
+            LEFT JOIN taxonomy t ON a.id = t.animal_id
+            LEFT JOIN species sp ON t.species_id = sp.id
+            LEFT JOIN genera g ON sp.genus_id = g.id
+            LEFT JOIN families f ON g.family_id = f.id
+            LEFT JOIN orders o ON f.order_id = o.id
+            LEFT JOIN classes c ON o.class_id = c.id
+            LEFT JOIN phyla p ON c.phylum_id = p.id
+            LEFT JOIN kingdoms k ON p.kingdom_id = k.id
+            WHERE a.status = 'approved'";
+
     $params = [];
 
     if ($category) {
-        $sql .= " AND taxonomy.class = :category";
+        $sql .= " AND c.name = :category"; // filtering by class name
         $params[':category'] = $category;
     }
 
     if (!empty($search)) {
-        $sql .= " AND (animals.common_name LIKE :search OR animals.scientific_name LIKE :search)";
+        $sql .= " AND (a.common_name LIKE :search OR a.scientific_name LIKE :search)";
         $params[':search'] = "%$search%";
     }
 
-    $sql .= " ORDER BY animals.common_name ASC LIMIT :limit OFFSET :offset";
-
+    $sql .= " ORDER BY a.common_name ASC LIMIT :limit OFFSET :offset";
 
     $stmt = $pdo->prepare($sql);
     foreach ($params as $key => $val) {
@@ -55,6 +85,8 @@ function getAllApprovedAnimals($pdo, $limit = 10, $offset = 0, $category = null,
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
 
 
 
@@ -77,12 +109,6 @@ function getRandomTrivia($pdo) {
     return $stmt->fetchColumn();
 }
 
-// function getLatestQuizzes($pdo, $limit = 3) {
-//     $stmt = $pdo->prepare("SELECT id, title FROM quizzes ORDER BY created_at DESC LIMIT ?");
-//     $stmt->bindValue(1, $limit, PDO::PARAM_INT);
-//     $stmt->execute();
-//     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-// }
 
 // fetch quizes for public/quizzes.php
 function getLatestQuizzes(PDO $pdo, int $limit = 5): array {
@@ -92,19 +118,40 @@ function getLatestQuizzes(PDO $pdo, int $limit = 5): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getApprovedBlogs($pdo, $limit = 3) {
-    $stmt = $pdo->prepare("
-        SELECT p.id, p.title, LEFT(p.body, 300) AS summary, u.name AS author_name
+
+// fetching blogs/posts
+function getApprovedBlogs($pdo, $limit = null, $search = null) {
+    $query = "
+        SELECT p.id, p.title, LEFT(p.body, 300) AS summary, p.created_at, u.name AS author_name
         FROM posts p
         JOIN users u ON p.author_id = u.id
-        WHERE p.type = 'blog' AND p.status = 'approved'
-        ORDER BY p.created_at DESC
-        LIMIT ?
-    ");
-    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
-    $stmt->execute();
+        -- WHERE p.type = 'article' AND p.status = 'approved'
+    ";
+
+    $params = [];
+
+    if (!empty($search)) {
+        $query .= " AND (p.title LIKE ? OR p.body LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+    }
+
+    $query .= " ORDER BY p.created_at DESC";
+
+    if ($limit !== null) {
+        $query .= " LIMIT ?";
+        $params[] = (int)$limit;
+    }
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+
+
 
 function getUpcomingEvents($pdo, $limit = 3) {
     $stmt = $pdo->prepare("
@@ -121,9 +168,10 @@ function getUpcomingEvents($pdo, $limit = 3) {
 
 function getHighlightedEndangeredSpecies($pdo, $limit = 3) {
     $stmt = $pdo->prepare("
-        SELECT common_name, main_photo
+        SELECT animals.common_name, animals.main_photo
         FROM animals
-        WHERE species_status = 'endangered'
+        JOIN species_statuses ON animals.species_status_id = species_statuses.id
+        WHERE species_statuses.label = 'endangered'
         ORDER BY RAND()
         LIMIT ?
     ");
@@ -131,6 +179,7 @@ function getHighlightedEndangeredSpecies($pdo, $limit = 3) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 
 

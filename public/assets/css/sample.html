@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoNature Design System</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* Additional styles just for this demo page */
+        .demo-section {
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .component-card {
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body class="main-background">
+    <header class="dark-background inverted-text" style="padding: 1rem 2rem;">
+        <h1>EcoNature Design System</h1>
+        <p class="muted-text">Demonstrating all color system components</p>
+    </header>
+
+    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+        <!-- Color Palette Display -->
+        <section class="demo-section secondary-background">
+            <h2 class="heading-text">Color Palette</h2>
+            <div class="component-grid">
+                <div class="card component-card">
+                    <h3 class="accent-text">Primary Colors</h3>
+                    <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                        <div style="width: 50px; height: 50px; background: var(--color-primary);"></div>
+                        <div style="width: 50px; height: 50px; background: var(--color-primary-light);"></div>
+                        <div style="width: 50px; height: 50px; background: var(--color-primary-lighter);"></div>
+                        <div style="width: 50px; height: 50px; background: var(--color-primary-dark);"></div>
+                    </div>
+                </div>
+                
+                <div class="card component-card">
+                    <h3 class="accent-text">Accent Colors</h3>
+                    <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                        <div style="width: 50px; height: 50px; background: var(--color-accent-primary);"></div>
+                        <div style="width: 50px; height: 50px; background: var(--color-accent-secondary);"></div>
+                        <div style="width: 50px; height: 50px; background: var(--color-accent-tertiary);"></div>
+                    </div>
+                </div>
+                
+                <div class="card component-card">
+                    <h3 class="accent-text">Neutral Colors</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0;">
+                        <div style="width: 40px; height: 40px; background: var(--color-neutral-lightest); border: 1px solid var(--color-border-light);"></div>
+                        <div style="width: 40px; height: 40px; background: var(--color-neutral-lighter); border: 1px solid var(--color-border-light);"></div>
+                        <div style="width: 40px; height: 40px; background: var(--color-neutral-light);"></div>
+                        <div style="width: 40px; height: 40px; background: var(--color-neutral-mid);"></div>
+                        <div style="width: 40px; height: 40px; background: var(--color-neutral-dark);"></div>
+                        <div style="width: 40px; height: 40px; background: var(--color-neutral-darkest);"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography -->
+        <section class="demo-section">
+            <h2 class="heading-text">Typography</h2>
+            <div class="component-grid">
+                <div class="card component-card">
+                    <h1 class="primary-text">Heading 1</h1>
+                    <h2 class="primary-text">Heading 2</h2>
+                    <h3 class="primary-text">Heading 3</h3>
+                    <h4 class="primary-text">Heading 4</h4>
+                    <p class="primary-text">Regular paragraph text demonstrating the primary text color and readability.</p>
+                    <p class="secondary-text">Secondary text for less important information.</p>
+                    <p class="muted-text">Muted text for placeholder or disabled states.</p>
+                    <p class="accent-text">Accent text for highlighting important elements.</p>
+                </div>
+                
+                <div class="card-dark component-card">
+                    <h1 class="inverted-text">Dark Background</h1>
+                    <p class="inverted-text">Text designed to be used on dark backgrounds.</p>
+                    <p class="muted-text">Muted text still works on dark backgrounds.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buttons -->
+        <section class="demo-section secondary-background">
+            <h2 class="heading-text">Buttons</h2>
+            <div class="component-grid">
+                <div class="card component-card">
+                    <button class="primary-button">Primary Button</button>
+                    <button class="primary-button" style="margin-top: 1rem;">Hover State</button>
+                    <p class="muted-text" style="margin-top: 1rem;">Used for main actions</p>
+                </div>
+                
+                <div class="card component-card">
+                    <button class="secondary-button">Secondary Button</button>
+                    <button class="secondary-button" style="margin-top: 1rem;">Hover State</button>
+                    <p class="muted-text" style="margin-top: 1rem;">Used for secondary actions</p>
+                </div>
+                
+                <div class="card component-card">
+                    <button class="tertiary-button">Tertiary Button</button>
+                    <button class="tertiary-button" style="margin-top: 1rem;">Hover State</button>
+                    <p class="muted-text" style="margin-top: 1rem;">Used for alternative actions</p>
+                </div>
+                
+                <div class="card component-card">
+                    <button class="outline-button">Outline Button</button>
+                    <button class="outline-button" style="margin-top: 1rem;">Hover State</button>
+                    <p class="muted-text" style="margin-top: 1rem;">Used for less prominent actions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards -->
+        <section class="demo-section">
+            <h2 class="heading-text">Cards</h2>
+            <div class="component-grid">
+                <div class="card">
+                    <div style="padding: 1.5rem;">
+                        <h3 class="primary-text">Standard Card</h3>
+                        <p class="secondary-text">This is a basic card with light background and subtle shadow.</p>
+                        <button class="primary-button" style="margin-top: 1rem;">Card Action</button>
+                    </div>
+                </div>
+                
+                <div class="card-dark">
+                    <div style="padding: 1.5rem;">
+                        <h3 class="inverted-text">Dark Card</h3>
+                        <p class="inverted-text">This card uses the dark background color.</p>
+                        <button class="tertiary-button" style="margin-top: 1rem;">Card Action</button>
+                    </div>
+                </div>
+                
+                <div class="card" style="border: 2px solid var(--color-border-accent);">
+                    <div style="padding: 1.5rem;">
+                        <h3 class="primary-text">Accent Border Card</h3>
+                        <p class="secondary-text">Card with accent border for highlighting.</p>
+                        <button class="secondary-button" style="margin-top: 1rem;">Card Action</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts -->
+        <section class="demo-section secondary-background">
+            <h2 class="heading-text">Alerts & Status</h2>
+            <div class="component-grid">
+                <div class="alert-success" style="padding: 1rem; margin-bottom: 1rem;">
+                    <h3 class="text-success">Success Alert</h3>
+                    <p>This operation was completed successfully.</p>
+                </div>
+                
+                <div class="alert-warning" style="padding: 1rem; margin-bottom: 1rem;">
+                    <h3 class="text-warning">Warning Alert</h3>
+                    <p>This action requires your attention.</p>
+                </div>
+                
+                <div class="alert-error" style="padding: 1rem;">
+                    <h3 class="text-error">Error Alert</h3>
+                    <p>Something went wrong with your request.</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3 class="primary-text">Status Indicators</h3>
+                <div style="display: flex; gap: 2rem; margin-top: 1rem;">
+                    <div>
+                        <div style="width: 20px; height: 20px; background: var(--color-success); border-radius: 50%; display: inline-block;"></div>
+                        <span class="primary-text" style="margin-left: 0.5rem;">Success</span>
+                    </div>
+                    <div>
+                        <div style="width: 20px; height: 20px; background: var(--color-warning); border-radius: 50%; display: inline-block;"></div>
+                        <span class="primary-text" style="margin-left: 0.5rem;">Warning</span>
+                    </div>
+                    <div>
+                        <div style="width: 20px; height: 20px; background: var(--color-error); border-radius: 50%; display: inline-block;"></div>
+                        <span class="primary-text" style="margin-left: 0.5rem;">Error</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Borders & Dividers -->
+        <section class="demo-section">
+            <h2 class="heading-text">Borders & Dividers</h2>
+            <div class="component-grid">
+                <div class="card component-card" style="border: 1px solid var(--color-border-light);">
+                    <h3 class="primary-text">Light Border</h3>
+                    <p class="secondary-text">Used for subtle separation</p>
+                </div>
+                
+                <div class="card component-card" style="border: 1px solid var(--color-border-dark);">
+                    <h3 class="primary-text">Dark Border</h3>
+                    <p class="secondary-text">Used for strong separation</p>
+                </div>
+                
+                <div class="card component-card" style="border: 1px solid var(--color-border-accent);">
+                    <h3 class="primary-text">Accent Border</h3>
+                    <p class="secondary-text">Used to highlight elements</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3 class="primary-text">Dividers</h3>
+                <div style="margin: 1.5rem 0;">
+                    <p>Content above the divider</p>
+                    <div class="divider"></div>
+                    <p>Content below the divider</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background Utilities -->
+        <section class="demo-section">
+            <h2 class="heading-text">Background Utilities</h2>
+            <div class="component-grid">
+                <div class="component-card" style="padding: 1.5rem; background: var(--color-bg-primary);">
+                    <h3 class="primary-text">Primary Background</h3>
+                    <p class="secondary-text">Main background color</p>
+                </div>
+                
+                <div class="component-card" style="padding: 1.5rem; background: var(--color-bg-secondary);">
+                    <h3 class="primary-text">Secondary Background</h3>
+                    <p class="secondary-text">Alternate background color</p>
+                </div>
+                
+                <div class="component-card" style="padding: 1.5rem; background: var(--color-bg-dark); color: white;">
+                    <h3>Dark Background</h3>
+                    <p>For contrast sections</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="dark-background inverted-text" style="padding: 2rem; margin-top: 3rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h2>Design System Documentation</h2>
+            <div class="divider" style="margin: 1rem 0; border-color: var(--color-neutral-mid);"></div>
+            <p class="muted-text">All color variables and components demonstrated on this page.</p>
+        </div>
+    </footer>
+</body>
+</html>
