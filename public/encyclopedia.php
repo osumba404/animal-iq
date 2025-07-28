@@ -346,7 +346,7 @@ $categories = ['Mammalia', 'Reptilia', 'Aves', 'Amphibia', 'Pisces', 'Insecta'];
           <h2><a href="animal.php?id=<?= $a['id'] ?>"><?= htmlspecialchars($a['common_name']) ?></a></h2>
           <div class="animal-card-content">
             <div class="animal-card-image">
-              <img src="../uploads/<?= $a['main_photo'] ?>" alt="<?= htmlspecialchars($a['common_name']) ?>">
+              <img src="../uploads/animals/<?= $a['main_photo'] ?>" alt="<?= htmlspecialchars($a['common_name']) ?>">
             </div>
             <div class="animal-card-details">
               <div class="detail-grid">

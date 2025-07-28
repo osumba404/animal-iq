@@ -197,6 +197,12 @@ CREATE TABLE posts (
     FOREIGN KEY (approved_by) REFERENCES users(id)
 );
 
+ALTER TABLE posts
+ADD COLUMN featured_image VARCHAR(255) AFTER region;
+ADD COLUMN approved_by INT AFTER author_id,
+ADD CONSTRAINT fk_approved_by FOREIGN KEY (approved_by) REFERENCES users(id);
+
+
 CREATE TABLE comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,

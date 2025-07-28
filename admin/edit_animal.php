@@ -220,7 +220,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                 </div>
 
                 <div class="form-group">
-                    <label>Species Status</label>
+                    <label>Conservation</label>
                     <select name="species_status_id">
                         <?php foreach ($species_statuses as $status): ?>
                             <option value="<?= $status['id'] ?>" <?= $status['id'] == $animal['species_status_id'] ? 'selected' : '' ?>>
@@ -249,7 +249,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <label>Main Photo</label>
                     <input type="file" name="main_photo">
                     <?php if (!empty($animal['main_photo'])): ?>
-                        <img src="../assets/images/animals/<?= htmlspecialchars($animal['main_photo']) ?>" class="animal-photo" alt="Animal Photo">
+                        <img src="../uploads/animals/<?= htmlspecialchars($animal['main_photo']) ?>" class="animal-photo" alt="Animal Photo">
                     <?php endif; ?>
                 </div>
 

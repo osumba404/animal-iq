@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/db.php';
-require_once 'admin_header.php';
+// require_once 'admin_header.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Invalid request");
@@ -25,7 +25,7 @@ $main_photo = '';
 if (!empty($_FILES['main_photo']['name'])) {
     $ext = pathinfo($_FILES['main_photo']['name'], PATHINFO_EXTENSION);
     $main_photo = uniqid('animal_') . '.' . $ext;
-    move_uploaded_file($_FILES['main_photo']['tmp_name'], "../assets/images/animals/" . $main_photo);
+    move_uploaded_file($_FILES['main_photo']['tmp_name'], "../uploads/animals/" . $main_photo);
 }
 
 $pdo->beginTransaction();

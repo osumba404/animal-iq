@@ -18,6 +18,7 @@ $sql = "
       a.avg_length_cm,
       a.created_at,
       ss.label AS species_status,
+      a.status,
 
       -- Taxonomy
       k.name AS kingdom,
@@ -262,11 +263,12 @@ if ($animals) {
                     <tr>
                         <th>Common Name</th>
                         <th>Scientific Name</th>
-                        <th>Image</th>
+                        <!-- <th>Image</th> -->
                         <th>Taxonomy</th>
                         <th>Status</th>
                         <th>Size</th>
                         <th>Actions</th>
+                        <th>Media Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -277,22 +279,22 @@ if ($animals) {
                                     <strong><?= htmlspecialchars($animal['common_name']) ?></strong>
                                     <?php if ($animal['main_photo']): ?>
                                         <div class="animal-thumbnail">
-                                            <img src="../assets/images/animals/<?= htmlspecialchars($animal['main_photo']) ?>" 
+                                            <img src="../uploads/animals/<?= htmlspecialchars($animal['main_photo']) ?>" 
                                                  alt="<?= htmlspecialchars($animal['common_name']) ?>">
                                         </div>
                                     <?php endif; ?>
                                 </td>
                                 <td><em><?= htmlspecialchars($animal['scientific_name']) ?></em></td>
-                                <td>
+                                <!-- <td>
                                     <?php if (!empty($photos[$animal['id']])): ?>
                                         <div class="animal-photos">
                                             <?php foreach (array_slice($photos[$animal['id']], 0, 3) as $photo): ?>
-                                                <img src="../assets/images/animals/<?= htmlspecialchars($photo['photo_url']) ?>" 
+                                                <img src="../uploads/animals/<?= htmlspecialchars($photo['photo_url']) ?>" 
                                                      alt="<?= htmlspecialchars($photo['caption']) ?>">
                                             <?php endforeach; ?>
                                         </div>
                                     <?php endif; ?>
-                                </td>
+                                </td> -->
                                 <td class="taxonomy">
                                     <?= implode(' → ', array_filter([
                                         htmlspecialchars($animal['kingdom']),
@@ -337,6 +339,13 @@ if ($animals) {
                                         </a>
                                     </div>
                                 </td>
+                                <td>
+                                  <select onchange="updateAnimalStatus(<?= $animal['id'] ?>, this.value)">
+                                    <option value="pending" <?= $animal['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                    <option value="approved" <?= $animal['status'] === 'approved' ? 'selected' : '' ?>>Approved</option>
+                                    <option value="rejected" <?= $animal['status'] === 'rejected' ? 'selected' : '' ?>>Rejected</option>
+                                  </select>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -354,5 +363,27 @@ if ($animals) {
             </table>
         </div>
     </div>
+
+
+    <script>
+  function updateAnimalStatus(animalId, newStatus) {
+    fetch('update_animal_status.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `id=${animalId}&status=${encodeURIComponent(newStatus)}`
+    })
+    .then(response => response.text())
+    .then(data => {
+      console.log(data); // Optional: Feedback
+    })
+    .catch(error => {
+      alert("Failed to update status");
+      console.error(error);
+    });
+  }
+</script>
+
 </body>
 </html>

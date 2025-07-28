@@ -23,10 +23,62 @@ if (!$animal) {
     exit;
 }
 
+$stmt = $pdo->prepare("
+    SELECT a.*, ss.label AS species_status_label
+    FROM animals a
+    LEFT JOIN species_statuses ss ON a.species_status_id = ss.id
+    WHERE a.id = ?
+");
+$stmt->execute([$animal_id]);
+$animal = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
 // Taxonomy
-$taxonomy = $pdo->prepare("SELECT * FROM taxonomy WHERE animal_id = ?");
-$taxonomy->execute([$animal_id]);
-$tax = $taxonomy->fetch(PDO::FETCH_ASSOC);
+// $taxonomy = $pdo->prepare("SELECT * FROM taxonomy WHERE animal_id = ?");
+// $taxonomy->execute([$animal_id]);
+// $tax = $taxonomy->fetch(PDO::FETCH_ASSOC);
+
+// Fetch taxonomy values
+// $species_stmt = $pdo->prepare("
+//     SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
+//            o.id AS order_id, c.id AS class_id, p.id AS phylum_id, k.id AS kingdom_id
+//     FROM species s
+//     JOIN genera g ON s.genus_id = g.id
+//     JOIN families f ON g.family_id = f.id
+//     JOIN orders o ON f.order_id = o.id
+//     JOIN classes c ON o.class_id = c.id
+//     JOIN phyla p ON c.phylum_id = p.id
+//     JOIN kingdoms k ON p.kingdom_id = k.id
+//     WHERE s.id = ?
+// ");
+
+$taxonomy_sql = "
+    SELECT 
+        species.name AS species,
+        genera.name AS genus,
+        families.name AS family,
+        orders.name AS order_name,
+        classes.name AS class,
+        phyla.name AS phylum,
+        kingdoms.name AS kingdom
+    FROM taxonomy
+    JOIN species ON taxonomy.species_id = species.id
+    JOIN genera ON species.genus_id = genera.id
+    JOIN families ON genera.family_id = families.id
+    JOIN orders ON families.order_id = orders.id
+    JOIN classes ON orders.class_id = classes.id
+    JOIN phyla ON classes.phylum_id = phyla.id
+    JOIN kingdoms ON phyla.kingdom_id = kingdoms.id
+    WHERE taxonomy.animal_id = ?
+";
+$tax_stmt = $pdo->prepare($taxonomy_sql);
+$tax_stmt->execute([$animal_id]);
+$tax = $tax_stmt->fetch(PDO::FETCH_ASSOC);
+
+
+
+
+
 
 // Habits
 $habits = $pdo->prepare("SELECT * FROM animal_habits WHERE animal_id = ?");
@@ -77,7 +129,7 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
 }
 
 .animal-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: 0.5rem;
     color: var(--color-primary-dark);
 }
@@ -91,16 +143,16 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
 
 .animal-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 2fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 .stat-card {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 1rem;
     border: 1px solid rgba(255,255,255,0.2);
 }
 
@@ -133,7 +185,8 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
     border-radius: 12px;
-    padding: 2rem;
+    padding: 1.5rem;
+    padding-top: 0;
     border: 1px solid rgba(255,255,255,0.2);
 }
 
@@ -201,7 +254,7 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
     <div class="animal-header">
         <?php if (!empty($animal['main_photo'])): ?>
         <div class="animal-image">
-            <img src="uploads/<?= $animal['main_photo'] ?>" alt="<?= htmlspecialchars($animal['common_name']) ?>">
+            <img src="../uploads/animals/<?= $animal['main_photo'] ?>" alt="<?= htmlspecialchars($animal['common_name']) ?>">
         </div>
         <?php endif; ?>
         
@@ -213,9 +266,12 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
                 <div class="stat-card">
                     <div class="stat-label">Conservation Status</div>
                     <div class="stat-value">
-                        <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $animal['species_status_id'])) ?>">
-                            <?= ucfirst($animal['species_status_id']) ?>
-                        </span>
+                       <?php if (!empty($animal['species_status_label'])): ?>
+                            <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $animal['species_status_label'])) ?>">
+                                <?= htmlspecialchars(ucfirst($animal['species_status_label'])) ?>
+                            </span>
+                        <?php endif; ?>
+
                     </div>
                 </div>
                 
@@ -245,20 +301,24 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <div class="grid-2">
-        <?php if ($tax): ?>
-        <div class="section">
-            <h2 class="section-title">Taxonomy</h2>
-            <ul style="list-style: none; padding: 0;">
-                <li><strong>Kingdom:</strong> <?= $tax['kingdom'] ?></li>
-                <li><strong>Phylum:</strong> <?= $tax['phylum'] ?></li>
-                <li><strong>Class:</strong> <?= $tax['class'] ?></li>
-                <li><strong>Order:</strong> <?= $tax['order'] ?></li>
-                <li><strong>Family:</strong> <?= $tax['family'] ?></li>
-                <li><strong>Genus:</strong> <?= $tax['genus'] ?></li>
-                <li><strong>Species:</strong> <?= $tax['species'] ?></li>
-            </ul>
-        </div>
+       <?php if ($tax): ?>
+            <div class="section">
+                <h2 class="section-title">Taxonomy</h2>
+                <ul>
+                    <p><strong>Kingdom:</strong> <?= htmlspecialchars($tax['kingdom']) ?></p>
+                    <p><strong>Phylum:</strong> <?= htmlspecialchars($tax['phylum']) ?></p>
+                    <p><strong>Class:</strong> <?= htmlspecialchars($tax['class']) ?></p>
+                    <p><strong>Order:</strong> <?= htmlspecialchars($tax['order_name']) ?></p>
+                    <p><strong>Family:</strong> <?= htmlspecialchars($tax['family']) ?></p>
+                    <p><strong>Genus:</strong> <?= htmlspecialchars($tax['genus']) ?></p>
+                    <p><strong>Species:</strong> <?= htmlspecialchars($tax['species']) ?></p>
+                </ul>
+            </div>
+        <?php else: ?>
+            <p><em>Taxonomy information is not available.</em></p>
         <?php endif; ?>
+
+
 
         <?php if ($habit): ?>
         <div class="section">

@@ -2,16 +2,16 @@
 
 :root {
   /* Primary palette */
-  --color-primary-light: #FFFEF7;
-  --color-primary-mid: #D1CFB1;
-  --color-primary-dark: #3E3E2B; /* WCAG AA compliant text */
-  --color-primary-accent: #4F5D2F; /* WCAG AA compliant button */
-  --color-secondary-accent: #7A6A2F;
+  --color-primary-light: #FFF8E8;  /* Warm ivory (from neutral-lightest) */
+  --color-primary-mid: #D5CFC0;    /* Stone gray (from neutral-light) */
+  --color-primary-dark: #1E1811;   /* Espresso (from neutral-dark) */
+  --color-primary-accent: #013221; /* Deep jungle green (from color-primary) */
+  --color-secondary-accent: #e8b824; /* Gold (from accent-primary) */
   
   /* Neutrals */
-  --color-neutral-light: #F8F7F0;
-  --color-neutral-mid: #E8E7DC;
-  --color-neutral-dark: #242414; /* Near-black for headings */
+  --color-neutral-light: #FFF8E8;  /* Warm ivory (background) */
+  --color-neutral-mid: #A8A293;    /* Medium gray (from neutral-mid) */
+  --color-neutral-dark: #1E1811;   /* Espresso (text) */
 }
 
 body {
