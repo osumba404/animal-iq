@@ -122,7 +122,7 @@ function getLatestQuizzes(PDO $pdo, int $limit = 5): array {
 // fetching blogs/posts
 function getApprovedBlogs($pdo, $limit = null, $search = null) {
     $query = "
-        SELECT p.id, p.title, LEFT(p.body, 300) AS summary, p.created_at, u.name AS author_name
+        SELECT p.id, p.title, p.featured_image, LEFT(p.body, 300) AS summary, p.created_at, u.name AS author_name
         FROM posts p
         JOIN users u ON p.author_id = u.id
         -- WHERE p.type = 'article' AND p.status = 'approved'

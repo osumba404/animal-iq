@@ -433,16 +433,24 @@ section h2::after {
                 </div>
             </div>
         <?php endif; ?>
+        <?php if (!empty($settings['site_mission'])): ?>
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">🌟 Our Mission</h2>
+                    <p class="card-text"><?= nl2br(htmlspecialchars($settings['site_mission'])) ?></p>
+                </div>
+            </div>
+        <?php endif; ?>
     </section>
 
     <!-- Animal of the Day -->
     <section>
         <?php if ($animal): ?>
             <div class="animal-of-day">
-                <img src="assets/images/animals/<?= htmlspecialchars($animal['main_photo']) ?>" alt="<?= htmlspecialchars($animal['common_name']) ?>">
+                <img src="uploads/animals/<?= htmlspecialchars($animal['main_photo']) ?>" alt="<?= htmlspecialchars($animal['common_name']) ?>">
                 <div class="animal-of-day-content">
                     <h2>🐾 Animal of the Day: <?= htmlspecialchars($animal['common_name']) ?></h2>
-                    <p><?= nl2br(htmlspecialchars($animal['short_description'])) ?></p>
+                    <p><?= nl2br(htmlspecialchars($animal['scientific_name'])) ?></p>
                     <a href="animal.php?id=<?= $animal['id'] ?>" class="card-link">Learn more about <?= htmlspecialchars($animal['common_name']) ?></a>
                 </div>
             </div>
@@ -482,7 +490,7 @@ section h2::after {
             <h2>📝 Latest Blog Posts</h2>
             <?php foreach ($blogs as $blog): ?>
                 <div class="card" style="margin-bottom: 1.5rem;">
-                    <img src="assets/images/blogs/<?= htmlspecialchars($blog['featured_image']) ?>" alt="<?= htmlspecialchars($blog['title']) ?>" class="card-img">
+                    <img src="../uploads/posts/<?= htmlspecialchars($blog['featured_image']) ?>" alt="<?= htmlspecialchars($blog['title']) ?>" class="card-img">
                     <div class="card-body">
                         <h3 class="card-title"><?= htmlspecialchars($blog['title']) ?></h3>
                         <p class="card-text"><?= htmlspecialchars(substr($blog['summary'], 0, 100)) . '...'; ?></p>
@@ -516,10 +524,10 @@ section h2::after {
             <h2>🧠 Try a New Quiz</h2>
             <?php foreach ($quizzes as $quiz): ?>
                 <div class="card" style="margin-bottom: 1.5rem;">
-                    <img src="assets/images/quizzes/<?= htmlspecialchars($quiz['featured_image']) ?>" alt="<?= htmlspecialchars($quiz['title']) ?>" class="card-img">
+                    <!-- <img src="assets/images/quizzes/<?= htmlspecialchars($quiz['featured_image']) ?>" alt="<?= htmlspecialchars($quiz['title']) ?>" class="card-img"> -->
                     <div class="card-body">
                         <h3 class="card-title"><?= htmlspecialchars($quiz['title']) ?></h3>
-                        <p class="card-text"><?= htmlspecialchars(substr($quiz['description'], 0, 100)) . '...'; ?></p>
+                        <!-- <p class="card-text"><?= htmlspecialchars(substr($quiz['description'], 0, 100)) . '...'; ?></p> -->
                         <a href="take_quiz.php?id=<?= $quiz['id'] ?>" class="card-link">Take quiz</a>
                     </div>
                 </div>
