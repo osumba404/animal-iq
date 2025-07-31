@@ -33,25 +33,6 @@ $stmt->execute([$animal_id]);
 $animal = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
-// Taxonomy
-// $taxonomy = $pdo->prepare("SELECT * FROM taxonomy WHERE animal_id = ?");
-// $taxonomy->execute([$animal_id]);
-// $tax = $taxonomy->fetch(PDO::FETCH_ASSOC);
-
-// Fetch taxonomy values
-// $species_stmt = $pdo->prepare("
-//     SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
-//            o.id AS order_id, c.id AS class_id, p.id AS phylum_id, k.id AS kingdom_id
-//     FROM species s
-//     JOIN genera g ON s.genus_id = g.id
-//     JOIN families f ON g.family_id = f.id
-//     JOIN orders o ON f.order_id = o.id
-//     JOIN classes c ON o.class_id = c.id
-//     JOIN phyla p ON c.phylum_id = p.id
-//     JOIN kingdoms k ON p.kingdom_id = k.id
-//     WHERE s.id = ?
-// ");
-
 $taxonomy_sql = "
     SELECT 
         species.name AS species,

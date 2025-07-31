@@ -30,6 +30,17 @@ if (!$taxonomy_row || !isset($taxonomy_row['species_id'])) {
 
 $species_id = $taxonomy_row['species_id'];
 
+
+// Before rendering:
+$life = $pdo->query("SELECT * FROM animal_life_data WHERE animal_id = $animal_id")->fetch();
+$human = $pdo->query("SELECT * FROM animal_human_interaction WHERE animal_id = $animal_id")->fetch();
+$defense = $pdo->query("SELECT * FROM animal_defense WHERE animal_id = $animal_id")->fetch();
+$health = $pdo->query("SELECT * FROM animal_health_risks WHERE animal_id = $animal_id")->fetch();
+$facts = $pdo->prepare("SELECT fact FROM animal_facts WHERE animal_id = ?");
+$facts->execute([$animal_id]);
+$facts = $facts->fetchAll(PDO::FETCH_ASSOC);
+
+
 // Fetch taxonomy values
 $species_stmt = $pdo->prepare("
     SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
@@ -358,6 +369,87 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <label>Behavior</label>
                     <textarea name="habits[behavior]"><?= htmlspecialchars($habits['behavior'] ?? '') ?></textarea>
                 </div>
+
+                <hr class="section-divider">
+
+<h2>Life Data</h2>
+<div class="form-group">
+  <label>Lifespan (years)</label>
+  <input type="number" step="0.1" name="life[lifespan_years]" value="<?= htmlspecialchars($life['lifespan_years'] ?? '') ?>">
+</div>
+<div class="form-group">
+  <label>Gestation Period (days)</label>
+  <input type="number" name="life[gestation_period_days]" value="<?= htmlspecialchars($life['gestation_period_days'] ?? '') ?>">
+</div>
+<div class="form-group">
+  <label>Litter Size (avg)</label>
+  <input type="number" step="0.1" name="life[litter_size_avg]" value="<?= htmlspecialchars($life['litter_size_avg'] ?? '') ?>">
+</div>
+<div class="form-group">
+  <label>Age of Maturity (years)</label>
+  <input type="number" step="0.1" name="life[maturity_age_years]" value="<?= htmlspecialchars($life['maturity_age_years'] ?? '') ?>">
+</div>
+
+<hr class="section-divider">
+
+<h2>Human Interaction</h2>
+<div class="form-group">
+  <label>Threats</label>
+  <textarea name="human[threats]"><?= htmlspecialchars($human['threats'] ?? '') ?></textarea>
+</div>
+<div class="form-group">
+  <label>Conservation Efforts</label>
+  <textarea name="human[conservation_efforts]"><?= htmlspecialchars($human['conservation_efforts'] ?? '') ?></textarea>
+</div>
+
+<hr class="section-divider">
+
+<h2>Defense Mechanisms</h2>
+<div class="form-group">
+  <label>Defense Mechanisms</label>
+  <textarea name="defense[defense_mechanisms]"><?= htmlspecialchars($defense['defense_mechanisms'] ?? '') ?></textarea>
+</div>
+<div class="form-group">
+  <label>Notable Adaptations</label>
+  <textarea name="defense[notable_adaptations]"><?= htmlspecialchars($defense['notable_adaptations'] ?? '') ?></textarea>
+</div>
+
+<hr class="section-divider">
+
+<h2>Health Risks</h2>
+<div class="form-group">
+  <label>Common Diseases</label>
+  <textarea name="health[common_diseases]"><?= htmlspecialchars($health['common_diseases'] ?? '') ?></textarea>
+</div>
+<div class="form-group">
+  <label>Known Parasites</label>
+  <textarea name="health[known_parasites]"><?= htmlspecialchars($health['known_parasites'] ?? '') ?></textarea>
+</div>
+<div class="form-group">
+  <label>Zoonotic Potential</label>
+  <select name="health[zoonotic_potential]">
+    <option value="0" <?= empty($health['zoonotic_potential']) ? 'selected' : '' ?>>No</option>
+    <option value="1" <?= !empty($health['zoonotic_potential']) ? 'selected' : '' ?>>Yes</option>
+  </select>
+</div>
+
+<hr class="section-divider">
+
+<h2>Fun Facts</h2>
+<?php if (!empty($facts)): foreach ($facts as $i => $fact): ?>
+<div class="form-group">
+  <label>Fact #<?= $i+1 ?></label>
+  <textarea name="facts[]"><?= htmlspecialchars($fact['fact']) ?></textarea>
+</div>
+<?php endforeach; endif; ?>
+<!-- Provide 3 blank fields if fewer facts -->
+<?php for ($i = count($facts); $i < 3; $i++): ?>
+<div class="form-group">
+  <label>Fact #<?= $i+1 ?></label>
+  <textarea name="facts[]"></textarea>
+</div>
+<?php endfor; ?>
+
 
                 <div class="form-group">
                     <label>Habitat</label>

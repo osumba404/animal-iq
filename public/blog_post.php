@@ -7,7 +7,7 @@ require_once 'header.php';
 require_once 'nav.php';
 
 $id = $_GET['id'] ?? 0;
-$stmt = $pdo->prepare("SELECT p.*, u.name AS author_name FROM posts p JOIN users u ON p.author_id = u.id WHERE p.id = ? AND p.type = 'blog' AND p.status = 'approved'");
+$stmt = $pdo->prepare("SELECT p.*, u.name AS author_name FROM posts p JOIN users u ON p.author_id = u.id WHERE p.id = ? ");
 $stmt->execute([$id]);
 $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -17,7 +17,7 @@ if (!$post) {
 ?>
   <article>
     <h1><?php echo htmlspecialchars($post['title']); ?></h1>
-    <p><em>By <?php echo htmlspecialchars($post['author_name']); ?> | <?php echo date('F j, Y', strtotime($post['created_at'])); ?></em></p>
+    <p><em>By <?php echo htmlspecialchars($post['author_name']); ?> | <?php echo date('F j, Y ~ g:i a', strtotime($post['created_at'])); ?></em></p>
     <div><?php echo nl2br(htmlspecialchars($post['body'])); ?></div>
   </article>
 <?php

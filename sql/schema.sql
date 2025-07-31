@@ -55,13 +55,27 @@ CREATE TABLE animals (
     submitted_by INT,
     approved_by INT,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-    is_animal_of_the_day BOOLEAN DEFAULT FALSE,
+    -- is_animal_of_the_day BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (submitted_by) REFERENCES users(id),
     FOREIGN KEY (approved_by) REFERENCES users(id),
     FOREIGN KEY (species_status_id) REFERENCES species_statuses(id)
 );
+
+CREATE TABLE animal_of_the_day (
+    id INT PRIMARY KEY DEFAULT 1, -- singleton row
+    animal_id INT,
+    date DATE,
+    FOREIGN KEY (animal_id) REFERENCES animals(id)
+);
+INSERT INTO animal_of_the_day (id, animal_id, date) VALUES (1, NULL, NULL);
+CREATE TABLE animal_rotation_log (
+    animal_id INT PRIMARY KEY,
+    shown_on DATE,
+    FOREIGN KEY (animal_id) REFERENCES animals(id)
+);
+
 
 -- Taxonomy hierarchy tables (all with the same structure)
 CREATE TABLE kingdoms (
@@ -179,6 +193,50 @@ CREATE TABLE animal_habits (
 
 
 
+
+CREATE TABLE animal_life_data (
+    animal_id INT PRIMARY KEY,
+    lifespan_years FLOAT,
+    gestation_period_days INT,
+    litter_size_avg FLOAT,
+    maturity_age_years FLOAT,
+    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE animal_human_interaction (
+    animal_id INT PRIMARY KEY,
+    threats TEXT, -- e.g., "poaching", "habitat loss"
+    conservation_efforts TEXT,
+    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE animal_facts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    animal_id INT,
+    fact TEXT,
+    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
+);
+
+CREATE TABLE animal_defense (
+    animal_id INT PRIMARY KEY,
+    defense_mechanisms TEXT, -- e.g. "camouflage", "venom", "speed"
+    notable_adaptations TEXT,
+    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
+);
+
+CREATE TABLE animal_health_risks (
+    animal_id INT PRIMARY KEY,
+    common_diseases TEXT,
+    known_parasites TEXT,
+    zoonotic_potential BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE
+);
+
+
+
+
 -- POSTS & COMMENTS
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -201,6 +259,14 @@ ALTER TABLE posts
 ADD COLUMN featured_image VARCHAR(255) AFTER region;
 ADD COLUMN approved_by INT AFTER author_id,
 ADD CONSTRAINT fk_approved_by FOREIGN KEY (approved_by) REFERENCES users(id);
+
+ALTER TABLE posts 
+    DROP FOREIGN KEY author_id,
+    ADD FOREIGN KEY (author_id) REFERENCES admins(id),
+    DROP FOREIGN KEY approved_by,
+    ADD FOREIGN KEY (approved_by) REFERENCES admins(id);
+
+
 
 
 CREATE TABLE comments (

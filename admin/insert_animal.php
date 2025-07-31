@@ -1,14 +1,10 @@
 <?php
-// admin/insert_animal.php
-
-require_once '../includes/db.php';          // PDO connection
-require_once '../includes/functions.php';   // Custom helper functions (e.g., sanitize)
-
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        // Required fields (you could later use a validate() helper)
         $scientific_name = $_POST['scientific_name'];
         $common_name = $_POST['common_name'];
         $population_estimate = $_POST['population_estimate'];
@@ -29,10 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $main_photo = null;
         if (!empty($_FILES['main_photo']['name']) && $_FILES['main_photo']['error'] === UPLOAD_ERR_OK) {
             $ext = pathinfo($_FILES['main_photo']['name'], PATHINFO_EXTENSION);
-            // $filename = uniqid() . '.' . $ext;
             $main_photo = uniqid('animal_') . '.' . $ext;
             move_uploaded_file($_FILES['main_photo']['tmp_name'], '../uploads/animals/' . $main_photo);
-            //$main_photo = 'uploads/animals/' . $filename;
         }
 
         $pdo->beginTransaction();
@@ -57,11 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $animal_id = $pdo->lastInsertId();
 
-        // 🧬 Link to taxonomy
+        // 🧬 Taxonomy
         $stmt = $pdo->prepare("INSERT INTO taxonomy (animal_id, species_id) VALUES (?, ?)");
         $stmt->execute([$animal_id, $species_id]);
 
-        // 🌍 Insert into animal_geography
+        // 🌍 Geography
         $stmt = $pdo->prepare("INSERT INTO animal_geography (animal_id, continent, subcontinent, country, realm, biome) 
                                VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([
@@ -73,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['biome']
         ]);
 
-        // 🧠 Insert into animal_habits
+        // 🧠 Habits
         $stmt = $pdo->prepare("INSERT INTO animal_habits (animal_id, diet, mating_habits, behavior, habitat) 
                                VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([
@@ -84,19 +78,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['habitat']
         ]);
 
-        // 📷 Handle additional photos
-        if (!empty($_FILES['additional_photos']['name'][0])) {
-            foreach ($_FILES['additional_photos']['tmp_name'] as $key => $tmp_name) {
-                if ($_FILES['additional_photos']['error'][$key] === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($_FILES['additional_photos']['name'][$key], PATHINFO_EXTENSION);
-                    $filename = uniqid() . '.' . $ext;
+        // 📈 Life Data
+        $stmt = $pdo->prepare("INSERT INTO animal_life_data (animal_id, lifespan_years, gestation_period_days, litter_size_avg, maturity_age_years)
+                               VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $animal_id,
+            $_POST['lifespan_years'] ?: null,
+            $_POST['gestation_period_days'] ?: null,
+            $_POST['litter_size_avg'] ?: null,
+            $_POST['maturity_age_years'] ?: null
+        ]);
+
+        // 👥 Human Interaction
+        $stmt = $pdo->prepare("INSERT INTO animal_human_interaction (animal_id, threats, conservation_efforts)
+                               VALUES (?, ?, ?)");
+        $stmt->execute([
+            $animal_id,
+            $_POST['threats'],
+            $_POST['conservation_efforts']
+        ]);
+
+        // 🛡️ Defense
+        $stmt = $pdo->prepare("INSERT INTO animal_defense (animal_id, defense_mechanisms, notable_adaptations)
+                               VALUES (?, ?, ?)");
+        $stmt->execute([
+            $animal_id,
+            $_POST['defense_mechanisms'],
+            $_POST['notable_adaptations']
+        ]);
+
+        // ⚕️ Health Risks
+        $stmt = $pdo->prepare("INSERT INTO animal_health_risks (animal_id, common_diseases, known_parasites, zoonotic_potential)
+                               VALUES (?, ?, ?, ?)");
+        $stmt->execute([
+            $animal_id,
+            $_POST['common_diseases'],
+            $_POST['known_parasites'],
+            isset($_POST['zoonotic_potential']) ? 1 : 0
+        ]);
+
+        // 🧠 Fun Facts
+        if (!empty($_POST['facts'])) {
+            $stmt = $pdo->prepare("INSERT INTO animal_facts (animal_id, fact) VALUES (?, ?)");
+            foreach ($_POST['facts'] as $fact) {
+                if (!empty(trim($fact))) {
+                    $stmt->execute([$animal_id, $fact]);
+                }
+            }
+        }
+
+        // 📷 Additional photos
+        if (!empty($_FILES['photos']['name'][0])) {
+            foreach ($_FILES['photos']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['photos']['error'][$key] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES['photos']['name'][$key], PATHINFO_EXTENSION);
+                    $filename = uniqid('photo_') . '.' . $ext;
                     move_uploaded_file($tmp_name, '../uploads/animals/' . $filename);
-
-                    $photo_url = 'uploads/animals/' . $filename;
-                    $caption = $_POST['photo_captions'][$key] ?? '';
-
+                    $caption = $_POST['captions'][$key] ?? '';
                     $stmt = $pdo->prepare("INSERT INTO animal_photos (animal_id, photo_url, caption) VALUES (?, ?, ?)");
-                    $stmt->execute([$animal_id, $photo_url, $caption]);
+                    $stmt->execute([$animal_id, $filename, $caption]);
                 }
             }
         }
@@ -104,6 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->commit();
         header("Location: manage_animals.php?success=1");
         exit;
+
     } catch (Exception $e) {
         $pdo->rollBack();
         echo "<h3>Error inserting animal: " . htmlspecialchars($e->getMessage()) . "</h3>";

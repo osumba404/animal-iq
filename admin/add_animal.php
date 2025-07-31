@@ -99,6 +99,75 @@ $statuses = $pdo->query("SELECT id, label FROM species_statuses ORDER BY FIELD(l
     <label>Biome:</label><input type="text" name="biome"><br>
   </fieldset>
   <br>
+  <!-- Life Data -->
+<fieldset>
+  <legend>Life Data</legend>
+  <label>Lifespan (years):</label>
+  <input type="number" step="0.1" name="lifespan_years"><br>
+
+  <label>Gestation Period (days):</label>
+  <input type="number" name="gestation_period_days"><br>
+
+  <label>Average Litter Size:</label>
+  <input type="number" step="0.1" name="litter_size_avg"><br>
+
+  <label>Age of Maturity (years):</label>
+  <input type="number" step="0.1" name="maturity_age_years"><br>
+</fieldset>
+<br>
+
+<!-- Human Interaction -->
+<fieldset>
+  <legend>Human Interaction</legend>
+  <label>Threats:</label><br>
+  <textarea name="threats"></textarea><br>
+
+  <label>Conservation Efforts:</label><br>
+  <textarea name="conservation_efforts"></textarea><br>
+</fieldset>
+<br>
+
+<!-- Defense Mechanisms -->
+<fieldset>
+  <legend>Defense Mechanisms</legend>
+  <label>Defense Mechanisms:</label><br>
+  <textarea name="defense_mechanisms"></textarea><br>
+
+  <label>Notable Adaptations:</label><br>
+  <textarea name="notable_adaptations"></textarea><br>
+</fieldset>
+<br>
+
+<!-- Health Risks -->
+<fieldset>
+  <legend>Health Risks</legend>
+  <label>Common Diseases:</label><br>
+  <textarea name="common_diseases"></textarea><br>
+
+  <label>Known Parasites:</label><br>
+  <textarea name="known_parasites"></textarea><br>
+
+  <label>Zoonotic Potential:</label>
+  <select name="zoonotic_potential">
+    <option value="0">No</option>
+    <option value="1">Yes</option>
+  </select><br>
+</fieldset>
+<br>
+
+<!-- Fun Facts -->
+<fieldset>
+  <legend>Fun Facts</legend>
+  <label>Interesting Fact 1:</label><br>
+  <textarea name="facts[]"></textarea><br>
+
+  <label>Interesting Fact 2:</label><br>
+  <textarea name="facts[]"></textarea><br>
+
+  <label>Interesting Fact 3:</label><br>
+  <textarea name="facts[]"></textarea><br>
+</fieldset>
+
 
   <fieldset>
     <legend>Additional Photos</legend>

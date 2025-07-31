@@ -120,11 +120,11 @@ function getLatestQuizzes(PDO $pdo, int $limit = 5): array {
 
 
 // fetching blogs/posts
-function getApprovedBlogs($pdo, $limit = null, $search = null) {
+function getApprovedBlogs($pdo, $search = null) {
     $query = "
-        SELECT p.id, p.title, p.featured_image, LEFT(p.body, 300) AS summary, p.created_at, u.name AS author_name
+         SELECT p.id, p.title, p.featured_image, LEFT(p.body, 300) AS summary, p.created_at, a.full_name AS author_name
         FROM posts p
-        JOIN users u ON p.author_id = u.id
+        JOIN admins a ON p.author_id = a.id
         -- WHERE p.type = 'article' AND p.status = 'approved'
     ";
 
@@ -138,10 +138,10 @@ function getApprovedBlogs($pdo, $limit = null, $search = null) {
 
     $query .= " ORDER BY p.created_at DESC";
 
-    if ($limit !== null) {
-        $query .= " LIMIT ?";
-        $params[] = (int)$limit;
-    }
+    // if ($limit !== null) {
+    //     $query .= " LIMIT ?";
+    //     $params[] = (int)$limit;
+    // }
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
@@ -171,7 +171,7 @@ function getHighlightedEndangeredSpecies($pdo, $limit = 3) {
         SELECT animals.common_name, animals.main_photo
         FROM animals
         JOIN species_statuses ON animals.species_status_id = species_statuses.id
-        WHERE species_statuses.label = 'endangered'
+        WHERE species_status_id = 2
         ORDER BY RAND()
         LIMIT ?
     ");

@@ -217,7 +217,7 @@ $password = $_GET['password'] ?? '';
     <a href="forgot_password.php">Forgot password?</a>
   </div>
 
-  <div class="social-login">
+  <!-- <div class="social-login">
     <span>Or continue with</span>
   </div>
 
@@ -229,7 +229,7 @@ $password = $_GET['password'] ?? '';
       <path d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
     </svg>
     Continue with Google
-  </a>
+  </a> -->
 
   <div class="register-prompt">
     Don't have an account? <a href="register.php">Sign up</a>

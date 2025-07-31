@@ -7,9 +7,9 @@ require_once 'header.php';
 require_once 'nav.php';
 
 $animal = getAnimalOfTheDay($pdo);
-$quizzes = getLatestQuizzes($pdo,  1);
-$blogs = getApprovedBlogs($pdo, null);
-$events = getUpcomingEvents($pdo, 2);
+$quizzes = getLatestQuizzes($pdo,  2);
+$blogs = getApprovedBlogs($pdo, 1);
+$events = getUpcomingEvents($pdo);
 $trivia = getRandomTrivia($pdo, 2);
 $endangered = getHighlightedEndangeredSpecies($pdo, 3);
 
@@ -451,6 +451,7 @@ section h2::after {
                 <div class="animal-of-day-content">
                     <h2>🐾 Animal of the Day: <?= htmlspecialchars($animal['common_name']) ?></h2>
                     <p><?= nl2br(htmlspecialchars($animal['scientific_name'])) ?></p>
+                    <p><?= nl2br(htmlspecialchars($animal['appearance'])) ?></p>
                     <a href="animal.php?id=<?= $animal['id'] ?>" class="card-link">Learn more about <?= htmlspecialchars($animal['common_name']) ?></a>
                 </div>
             </div>

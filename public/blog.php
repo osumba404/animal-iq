@@ -223,7 +223,7 @@ $blogs = getApprovedBlogs($pdo, null, $searchTerm);
             <div class="blog-meta">
               <span>By <?php echo htmlspecialchars($post['author_name']); ?></span>
               <span>•</span>
-              <span><?php echo date('F j, Y', strtotime($post['created_at'])); ?></span>
+              <span><?php echo date('F j, Y ~ g:i a', strtotime($post['created_at'])); ?></span>
             </div>
             <p class="blog-summary"><?php echo nl2br(htmlspecialchars($post['summary'])); ?></p>
             <a href="blog_post.php?id=<?php echo $post['id']; ?>" class="read-more">Read more</a>
