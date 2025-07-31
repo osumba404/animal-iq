@@ -84,6 +84,49 @@ try {
         $habits['diet'], $habits['mating_habits'], $habits['behavior'], $habits['habitat'], $id
     ]);
 
+        // NEW TABLES HANDLING
+
+    // 1. Update animal_life_data
+    $life = $_POST['life_data'] ?? [];
+    $stmt = $pdo->prepare("UPDATE animal_life_data SET lifespan_years=?, gestation_period_days=?, litter_size_avg=?, maturity_age_years=? WHERE animal_id=?");
+    $stmt->execute([
+        $life['lifespan_years'], $life['gestation_period_days'], $life['litter_size_avg'], $life['maturity_age_years'], $id
+    ]);
+
+    // 2. Update animal_human_interaction
+    $interaction = $_POST['human_interaction'] ?? [];
+    $stmt = $pdo->prepare("UPDATE animal_human_interaction SET threats=?, conservation_efforts=? WHERE animal_id=?");
+    $stmt->execute([
+        $interaction['threats'], $interaction['conservation_efforts'], $id
+    ]);
+
+    // 3. Replace all animal_facts
+    $facts = $_POST['facts'] ?? [];
+    $stmt = $pdo->prepare("DELETE FROM animal_facts WHERE animal_id = ?");
+    $stmt->execute([$id]);
+
+    if (!empty($facts) && is_array($facts)) {
+        $stmt = $pdo->prepare("INSERT INTO animal_facts (animal_id, fact) VALUES (?, ?)");
+        foreach ($facts as $fact) {
+            $stmt->execute([$id, $fact]);
+        }
+    }
+
+    // 4. Update animal_defense
+    $defense = $_POST['defense'] ?? [];
+    $stmt = $pdo->prepare("UPDATE animal_defense SET defense_mechanisms=?, notable_adaptations=? WHERE animal_id=?");
+    $stmt->execute([
+        $defense['defense_mechanisms'], $defense['notable_adaptations'], $id
+    ]);
+
+    // 5. Update animal_health_risks
+    $health = $_POST['health_risks'] ?? [];
+    $stmt = $pdo->prepare("UPDATE animal_health_risks SET common_diseases=?, known_parasites=?, zoonotic_potential=? WHERE animal_id=?");
+    $stmt->execute([
+        $health['common_diseases'], $health['known_parasites'], !empty($health['zoonotic_potential']) ? 1 : 0, $id
+    ]);
+
+
     $pdo->commit();
     header("Location: manage_animals.php?updated=1");
     exit;
