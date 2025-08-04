@@ -4,6 +4,9 @@ require_once '../includes/functions.php';
 require_once 'header.php';
 require_once 'nav.php';
 
+
+$page_title = "Animal IQ | Blogs1";
+
 $searchTerm = $_GET['search'] ?? '';
 $blogs = getApprovedBlogs($pdo, null, $searchTerm);
 ?>

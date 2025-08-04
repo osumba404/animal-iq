@@ -29,25 +29,6 @@ $stmt->execute([$animal_id]);
 $animal = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
-// Taxonomy
-// $taxonomy = $pdo->prepare("SELECT * FROM taxonomy WHERE animal_id = ?");
-// $taxonomy->execute([$animal_id]);
-// $tax = $taxonomy->fetch(PDO::FETCH_ASSOC);
-
-// Fetch taxonomy values
-// $species_stmt = $pdo->prepare("
-//     SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
-//            o.id AS order_id, c.id AS class_id, p.id AS phylum_id, k.id AS kingdom_id
-//     FROM species s
-//     JOIN genera g ON s.genus_id = g.id
-//     JOIN families f ON g.family_id = f.id
-//     JOIN orders o ON f.order_id = o.id
-//     JOIN classes c ON o.class_id = c.id
-//     JOIN phyla p ON c.phylum_id = p.id
-//     JOIN kingdoms k ON p.kingdom_id = k.id
-//     WHERE s.id = ?
-// ");
-
 $taxonomy_sql = "
     SELECT 
         species.name AS species,
@@ -85,6 +66,32 @@ $habit = $habits->fetch(PDO::FETCH_ASSOC);
 $geo = $pdo->prepare("SELECT * FROM animal_geography WHERE animal_id = ?");
 $geo->execute([$animal_id]);
 $location = $geo->fetch(PDO::FETCH_ASSOC);
+
+// Life Data
+$life_stmt = $pdo->prepare("SELECT * FROM animal_life_data WHERE animal_id = ?");
+$life_stmt->execute([$animal_id]);
+$life = $life_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Human Interaction
+$human_stmt = $pdo->prepare("SELECT * FROM animal_human_interaction WHERE animal_id = ?");
+$human_stmt->execute([$animal_id]);
+$human = $human_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Defense Mechanisms
+$defense_stmt = $pdo->prepare("SELECT * FROM animal_defense WHERE animal_id = ?");
+$defense_stmt->execute([$animal_id]);
+$defense = $defense_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Health Risks
+$health_stmt = $pdo->prepare("SELECT * FROM animal_health_risks WHERE animal_id = ?");
+$health_stmt->execute([$animal_id]);
+$health = $health_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Facts (can be multiple)
+$facts_stmt = $pdo->prepare("SELECT * FROM animal_facts WHERE animal_id = ?");
+$facts_stmt->execute([$animal_id]);
+$facts = $facts_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 // Photos
 $photos = $pdo->prepare("SELECT * FROM animal_photos WHERE animal_id = ?");
@@ -357,6 +364,70 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
     <?php endif; ?>
+
+    <?php if ($life): ?>
+<div class="section">
+    <h2 class="section-title">Life Data</h2>
+    <?php if (!empty($life['lifespan_years'])): ?>
+        <p><strong>Lifespan:</strong> <?= htmlspecialchars($life['lifespan_years']) ?> years</p>
+    <?php endif; ?>
+    <?php if (!empty($life['reproduction'])): ?>
+        <p><strong>Reproduction:</strong> <?= nl2br(htmlspecialchars($life['reproduction'])) ?></p>
+    <?php endif; ?>
+    <?php if (!empty($life['growth'])): ?>
+        <p><strong>Growth:</strong> <?= nl2br(htmlspecialchars($life['growth'])) ?></p>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+<?php if ($human): ?>
+<div class="section">
+    <h2 class="section-title">Human Interaction</h2>
+    <?php if (!empty($human['threats'])): ?>
+        <p><strong>Threats:</strong> <?= nl2br(htmlspecialchars($human['threats'])) ?></p>
+    <?php endif; ?>
+    <?php if (!empty($human['conservation_efforts'])): ?>
+        <p><strong>Conservation Efforts:</strong> <?= nl2br(htmlspecialchars($human['conservation_efforts'])) ?></p>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+
+<?php if ($defense): ?>
+<div class="section">
+    <h2 class="section-title">Defense Mechanisms</h2>
+    <p><?= nl2br(htmlspecialchars($defense['defense_mechanisms'])) ?></p>
+</div>
+<?php endif; ?>
+
+
+<?php if ($health): ?>
+<div class="section">
+    <h2 class="section-title">Health & Diseases</h2>
+    <?php if (!empty($health['common_diseases'])): ?>
+        <p><strong>Common Diseases:</strong> <?= nl2br(htmlspecialchars($health['common_diseases'])) ?></p>
+    <?php endif; ?>
+    <?php if (!empty($health['health_threats'])): ?>
+        <p><strong>Health Threats:</strong> <?= nl2br(htmlspecialchars($health['health_threats'])) ?></p>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+
+
+<?php if ($facts): ?>
+<div class="section">
+    <h2 class="section-title">Interesting Facts</h2>
+    <ul>
+        <?php foreach ($facts as $fact): ?>
+            <li><?= htmlspecialchars($fact['fact']) ?></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+
+
 
     <?php if ($gallery): ?>
     <div class="section">

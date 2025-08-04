@@ -37,7 +37,7 @@ function getAllApprovedAnimals($pdo, $limit = 10, $offset = 0, $category = null,
                 a.appearance,
                 a.main_photo,
                 a.status,
-                a.is_animal_of_the_day,
+              
                 a.created_at,
                 ss.label AS species_status,
                 
@@ -92,10 +92,11 @@ function getAllApprovedAnimals($pdo, $limit = 10, $offset = 0, $category = null,
 
 // ==========gets user profile data
 function getUserProfile($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT id, name, email, registered_at, profile_picture FROM users WHERE id = :id LIMIT 1");
-    $stmt->execute(['id' => $id]);
+    $stmt = $pdo->prepare("SELECT id, name, email, role, profile_pic AS profile_picture, registered_at FROM users WHERE id = ?");
+    $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
 
 
 

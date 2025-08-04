@@ -274,8 +274,8 @@ if (isset($_GET['delete'])) {
 
                 $stmt = $pdo->prepare("UPDATE badges SET name=?, description=?, badge_type=?, icon=? WHERE id=?");
                 $stmt->execute([$name, $description, $badge_type, $icon, $_GET['id']]);
-                header("Location: manage_badges.php");
-                exit();
+                // header("Location: manage_badges.php");
+                // exit();
             }
             ?>
 

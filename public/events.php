@@ -4,18 +4,21 @@ require_once 'header.php';
 require_once 'nav.php';
 $page_title = "Events";
 
-$user_id = $_SESSION['user_id'] ?? null;
+// Match nav.php style
+$is_logged_in = isset($_SESSION['user']);
+$user_id = $is_logged_in ? $_SESSION['user']['id'] : null;
+
 $successMessage = '';
 $errorMessage = '';
 
-// Handle signup
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id']) && $user_id) {
+// Handle signup if user is logged in
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id']) && $is_logged_in) {
     $event_id = $_POST['event_id'];
 
     // Check if user already signed up
     $checkStmt = $pdo->prepare("SELECT id FROM event_signups WHERE user_id = ? AND event_id = ?");
     $checkStmt->execute([$user_id, $event_id]);
-    
+
     if ($checkStmt->rowCount() === 0) {
         $signupStmt = $pdo->prepare("INSERT INTO event_signups (user_id, event_id) VALUES (?, ?)");
         $signupStmt->execute([$user_id, $event_id]);
@@ -47,210 +50,22 @@ $ongoingEvents = getEventsByCategory($pdo, $user_id, "DATE(e.event_date) = '$tod
 $upcomingEvents = getEventsByCategory($pdo, $user_id, "DATE(e.event_date) > '$today'");
 ?>
 
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="assets/css/pages.css">
 <style>
-/* Premium Events Page Styling */
-.events-container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
+  .meta-item i {
+  margin-right: 6px;
+  color: #444;
+}
+.signed-up-label i {
+  color: green;
+  margin-right: 4px;
 }
 
-.events-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  position: relative;
-}
-
-.events-header h1 {
-  font-size: 3rem;
-  color: var(--color-primary);
-  margin-bottom: 1.5rem;
-  position: relative;
-  display: inline-block;
-}
-
-.events-header h1::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 25%;
-  width: 50%;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-primary), var(--color-primary));
-  border-radius: 3px;
-}
-
-.notification {
-  padding: 1rem;
-  margin: 1rem auto;
-  max-width: 800px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.success-notification {
-  background-color: rgba(26, 138, 106, 0.1);
-  color: var(--color-success);
-  border-left: 4px solid var(--color-success);
-}
-
-.error-notification {
-  background-color: rgba(194, 59, 34, 0.1);
-  color: var(--color-error);
-  border-left: 4px solid var(--color-error);
-}
-
-.event-section {
-  margin-bottom: 4rem;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 1.8rem;
-  color: var(--color-primary);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-border-light);
-}
-
-.event-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-}
-
-.event-card {
-  background: var(--color-bg-primary);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(30, 24, 17, 0.08);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  border: 1px solid var(--color-border-light);
-}
-
-.event-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 32px rgba(30, 24, 17, 0.15);
-}
-
-.event-header {
-  padding: 1.5rem 1.5rem 0;
-}
-
-.event-title {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-}
-
-.event-date {
-  display: inline-block;
-  background: var(--color-primary-light);
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-}
-
-.event-body {
-  padding: 0 1.5rem 1.5rem;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.event-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-}
-
-.meta-item i {
-  color: var(--color-primary);
-}
-
-.event-description {
-  color: var(--color-text-secondary);
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-}
-
-.event-footer {
-  margin-top: auto;
-  padding: 1rem 1.5rem;
-  background: var(--color-bg-secondary);
-  border-top: 1px solid var(--color-border-light);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.attendees-count {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-}
-
-.signup-button {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 0.5rem 1.2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-}
-
-.signup-button:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-2px);
-}
-
-.signed-up-label {
-  color: var(--color-success);
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.login-prompt {
-  color: var(--color-text-muted);
-  font-style: italic;
-}
-
-@media (max-width: 768px) {
-  .events-header h1 {
-    font-size: 2.2rem;
-  }
-  
-  .event-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .section-header {
-    font-size: 1.5rem;
-  }
-}
 </style>
-
 <div class="events-container">
   <header class="events-header">
     <h1>Community Events</h1>
@@ -265,59 +80,60 @@ $upcomingEvents = getEventsByCategory($pdo, $user_id, "DATE(e.event_date) > '$to
 
   <?php
   function renderEventSection($title, $events, $user_id) {
-    if (count($events) === 0) return;
+  if (count($events) === 0) return;
 
-    echo '<div class="event-section">';
-    echo '<div class="section-header">' . $title . '</div>';
-    echo '<div class="event-grid">';
-    
-    foreach ($events as $event) {
-      $dateFormatted = date('F j, Y \a\t g:i A', strtotime($event['event_date']));
-      $isSignedUp = $event['user_signed_up'];
-      
-      echo '<article class="event-card">';
-      echo '<div class="event-header">';
-      echo '<h3 class="event-title">' . htmlspecialchars($event['title']) . '</h3>';
-      echo '<span class="event-date">' . $dateFormatted . '</span>';
-      echo '</div>';
-      
-      echo '<div class="event-body">';
-      echo '<div class="event-meta">';
-      echo '<span class="meta-item"><i>📍</i>' . htmlspecialchars($event['location']) . '</span>';
-      echo '<span class="meta-item"><i>🎭</i>' . htmlspecialchars($event['type']) . '</span>';
-      echo '<span class="meta-item"><i>👤</i>' . htmlspecialchars($event['creator']) . '</span>';
-      echo '</div>';
-      
-      echo '<p class="event-description">' . nl2br(htmlspecialchars($event['description'])) . '</p>';
-      echo '</div>';
-      
-      echo '<div class="event-footer">';
-      echo '<span class="attendees-count">' . (int)$event['signup_count'] . ' attending</span>';
-      
-      if ($user_id) {
-        if ($isSignedUp) {
-          echo '<span class="signed-up-label"><i>✓</i> You\'re attending</span>';
-        } else {
-          echo '<form method="post">';
-          echo '<input type="hidden" name="event_id" value="' . $event['id'] . '">';
-          echo '<button type="submit" class="signup-button">Attend</button>';
-          echo '</form>';
-        }
+  echo '<div class="event-section">';
+  echo '<div class="section-header">' . htmlspecialchars($title) . '</div>';
+  echo '<div class="event-grid">';
+
+  foreach ($events as $event) {
+    $dateFormatted = date('F j, Y \a\t g:i A', strtotime($event['event_date']));
+    $isSignedUp = $event['user_signed_up'];
+
+    echo '<article class="event-card">';
+    echo '<div class="event-header">';
+    echo '<h3 class="event-title">' . htmlspecialchars($event['title']) . '</h3>';
+    echo '<span class="event-date">' . $dateFormatted . '</span>';
+    echo '</div>';
+
+    echo '<div class="event-body">';
+    echo '<div class="event-meta">';
+    echo '<span class="meta-item"><i class="fas fa-map-marker-alt"></i> ' . htmlspecialchars($event['location']) . '</span>';
+    echo '<span class="meta-item"><i class="fas fa-calendar-alt"></i> ' . htmlspecialchars($event['type']) . '</span>';
+    echo '<span class="meta-item"><i class="fas fa-user"></i> ' . htmlspecialchars($event['creator']) . '</span>';
+    echo '</div>';
+
+    echo '<p class="event-description">' . nl2br(htmlspecialchars($event['description'])) . '</p>';
+    echo '</div>';
+
+    echo '<div class="event-footer">';
+    echo '<span class="attendees-count">' . (int)$event['signup_count'] . ' attending</span>';
+
+    if ($user_id) {
+      if ($isSignedUp) {
+        echo '<span class="signed-up-label"><i class="fas fa-check-circle"></i> You\'re attending</span>';
       } else {
-        echo '<span class="login-prompt"><a href="login.php">Login</a> to attend</span>';
+        echo '<form method="post">';
+        echo '<input type="hidden" name="event_id" value="' . (int)$event['id'] . '">';
+        echo '<button type="submit" class="signup-button">Register for Event</button>';
+        echo '</form>';
       }
-      
-      echo '</div>';
-      echo '</article>';
+    } else {
+      echo '<span class="login-prompt"><a href="login.php">Login</a> to register</span>';
     }
-    
+
     echo '</div>';
-    echo '</div>';
+    echo '</article>';
   }
 
-  renderEventSection("🟢 Happening Today", $ongoingEvents, $user_id);
-  renderEventSection("🔜 Upcoming Events", $upcomingEvents, $user_id);
-  renderEventSection("✅ Past Events", $pastEvents, $user_id);
+  echo '</div>';
+  echo '</div>';
+}
+
+
+  renderEventSection("Happening Today", $ongoingEvents, $user_id);
+  renderEventSection("Upcoming Events", $upcomingEvents, $user_id);
+  renderEventSection("Past Events", $pastEvents, $user_id);
   ?>
 </div>
 

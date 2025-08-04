@@ -3,7 +3,7 @@
 
 
 <?php
-require_once 'header.php';
+// require_once 'header.php';
 require_once '../includes/db.php';
 $is_logged_in = isset($_SESSION['user']);
 
@@ -145,9 +145,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 <div class="navbar">
   <div class="nav-container">
     <div class="brand">
-      <span class="logoo">
+      <span>
         <?php if (!empty($settings['site_logo'])): ?>
-          <img src="../uploads/images/<?= htmlspecialchars($settings['site_logo']) ?>" alt="Site Logo">
+          <img class="logoo" src="../uploads/images/<?= htmlspecialchars($settings['site_logo']) ?>" alt="Site Logo">
         <?php endif; ?>
       </span>
       
@@ -164,43 +164,49 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       <li class="dropdown">
         <a href="#">Learn ▾</a>
         <div class="dropdown-content">
-          <a href="encyclopedia.php">Encyclopedia</a>
-          <a href="learn.php">Learn</a>
+          <a href="encyclopedia.php">Explore Wildlife</a>
+          <!-- <a href="learn.php">Learn</a> -->
           <a href="quizzes.php">Quizzes</a>
         </div>
       </li>
       
       <li><a href="blog.php">Blog</a></li>
-      <li><a href="gallery.php">Gallery</a></li>
+      <!-- <li><a href="gallery.php">Gallery</a></li> -->
       
       <li class="dropdown">
         <a href="#">Community ▾</a>
         <div class="dropdown-content">
           <a href="events.php">Events</a>
-          <a href="forum.php">Forum</a>
-          <a href="contribute.php">Contribute</a>
+          <a href="support.php">Support</a>
+          <!-- <a href="forum.php">Forum</a> -->
+          <!-- <a href="contribute.php">Contribute</a> -->
         </div>
       </li>
       
-      <li><a href="support.php">Support</a></li>
+    
 
       <?php if ($is_logged_in): ?>
-        <li class="dropdown">
-          <a href="#">Account ▾</a>
-          <div class="dropdown-content">
-            <a href="profile.php"><?= $userInitial ?>'s Profile</a>
-            <a href="logout.php">Logout</a>
-          </div>
-        </li>
-      <?php else: ?>
-        <li class="dropdown">
-          <a href="#">Account ▾</a>
-          <div class="dropdown-content">
-            <a href="login.php">Login</a>
-            <a href="register.php">Register</a>
-          </div>
-        </li>
+  <li class="dropdown">
+    <a href="#">Account ▾</a>
+    <div class="dropdown-content">
+      <?php if (!empty($userInitial) && isset($_SESSION['user']['id'])): ?>
+        <a href="profile.php?id=<?= $_SESSION['user']['id'] ?>">
+          <div class="user-initial-circle"><?= $userInitial ?></div>My Profile
+        </a>
       <?php endif; ?>
+      <a href="logout.php">Logout</a>
+    </div>
+  </li>
+<?php else: ?>
+  <li class="dropdown">
+    <a href="#">Account ▾</a>
+    <div class="dropdown-content">
+      <a href="login.php">Login</a>
+      <a href="register.php">Register</a>
+    </div>
+  </li>
+<?php endif; ?>
+
     </ul>
   </div>
 </div>

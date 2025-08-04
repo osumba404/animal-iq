@@ -81,7 +81,5 @@ if (isset($_SESSION['user']) && !empty($_SESSION['user']['name'])) {
             Animal IQ
         </a> -->
         
-        <?php if (!empty($userInitial)): ?>
-            <div class="user-initial-circle"><?= $userInitial ?></div>
-        <?php endif; ?>
+        
     </div>

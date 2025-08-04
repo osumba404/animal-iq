@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $avg_length_cm = $_POST['avg_length_cm'];
         $appearance = $_POST['appearance'];
         $species_id = $_POST['species_id'];
-        $is_animal_of_the_day = isset($_POST['is_animal_of_the_day']) ? 1 : 0;
         $submitted_by = $_SESSION['admin_id'] ?? null;
         $approved_by = null;
 
@@ -33,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // 🐾 Insert into animals
         $stmt = $pdo->prepare("INSERT INTO animals 
-            (scientific_name, common_name, population_estimate, species_status_id, avg_weight_kg, avg_length_cm, appearance, main_photo, submitted_by, approved_by, is_animal_of_the_day) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (scientific_name, common_name, population_estimate, species_status_id, avg_weight_kg, avg_length_cm, appearance, main_photo, submitted_by, approved_by) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $scientific_name,
             $common_name,
@@ -46,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $main_photo,
             $submitted_by,
             $approved_by,
-            $is_animal_of_the_day
+  
         ]);
 
         $animal_id = $pdo->lastInsertId();

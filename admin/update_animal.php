@@ -87,14 +87,14 @@ try {
         // NEW TABLES HANDLING
 
     // 1. Update animal_life_data
-    $life = $_POST['life_data'] ?? [];
+    $life = $_POST['life'] ?? [];
     $stmt = $pdo->prepare("UPDATE animal_life_data SET lifespan_years=?, gestation_period_days=?, litter_size_avg=?, maturity_age_years=? WHERE animal_id=?");
     $stmt->execute([
         $life['lifespan_years'], $life['gestation_period_days'], $life['litter_size_avg'], $life['maturity_age_years'], $id
     ]);
 
     // 2. Update animal_human_interaction
-    $interaction = $_POST['human_interaction'] ?? [];
+    $interaction = $_POST['human'] ?? [];
     $stmt = $pdo->prepare("UPDATE animal_human_interaction SET threats=?, conservation_efforts=? WHERE animal_id=?");
     $stmt->execute([
         $interaction['threats'], $interaction['conservation_efforts'], $id
@@ -120,7 +120,7 @@ try {
     ]);
 
     // 5. Update animal_health_risks
-    $health = $_POST['health_risks'] ?? [];
+    $health = $_POST['health'] ?? [];
     $stmt = $pdo->prepare("UPDATE animal_health_risks SET common_diseases=?, known_parasites=?, zoonotic_potential=? WHERE animal_id=?");
     $stmt->execute([
         $health['common_diseases'], $health['known_parasites'], !empty($health['zoonotic_potential']) ? 1 : 0, $id

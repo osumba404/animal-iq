@@ -1,21 +1,28 @@
 <?php
 // public/profile.php
+
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once 'header.php';
 require_once 'nav.php';
 
-// Get ID from URL and sanitize
-$id = $_GET['id'] ?? null;
-
-if (!$id) {
-    echo "<div class='error-message'>User ID is missing.</div>";
+// Ensure user is logged in
+if (!isset($_SESSION['user'])) {
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI']; // Cache original URL
+    header("Location: login.php");
     exit;
 }
 
-$user = getUserProfile($pdo, $id);
+$user = getUserProfile($pdo, $_SESSION['user']['id']); // get the logged-in user
+
+if (!$user) {
+    echo "<div class='error-message'>User not found.</div>";
+    require_once 'footer.php';
+    exit;
+}
 ?>
+
 
 <style>
 /* Premium Profile Page Styling */
@@ -251,7 +258,7 @@ $user = getUserProfile($pdo, $id);
 
 <div class="profile-container">
   <header class="profile-header">
-    <h1>User Profile</h1>
+    <h1>My Profile</h1>
   </header>
 
   <?php if ($user): ?>
@@ -281,7 +288,7 @@ $user = getUserProfile($pdo, $id);
           <div class="detail-label">
             <span>📅</span> Member Since
           </div>
-          <div class="detail-value"><?php echo date('F j, Y', strtotime($user['registered_at'])); ?></div>
+          <div class="detail-value"><?php echo date('F j, Y g:i a', strtotime($user['registered_at'])); ?></div>
         </div>
         
         <?php if (isset($_SESSION['user_id']) && $user['id'] === $_SESSION['user_id']): ?>

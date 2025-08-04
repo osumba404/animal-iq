@@ -12,29 +12,6 @@ function isActive($page) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* :root {
-                /* Sidebar specific variables 
-                --sidebar-width: 245px;
-                --sidebar-transition: all 0.3s ease-out;
-                --sidebar-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            } */
-
-            /* .admin-sidebar {
-                position: relative;
-                left: 0;
-                top: 0;
-                width: var(--sidebar-width);
-                height: 100%;
-                background: var(--color-primary-dark);
-                color: var(--color-primary-light);
-                box-shadow: var(--sidebar-shadow);
-                z-index: 100;
-                display: flex;
-                flex-direction: column;
-                overflow-y: auto;
-                padding-bottom: none;
-            } */
-
             .sidebar-header {
                 padding: 1.5rem;
                 border-bottom: 1px solid var(--color-primary-accent);
@@ -226,12 +203,9 @@ function isActive($page) {
             <a href="manage_animals.php" class="<?= isActive('manage_animals.php') ?>">
                 <i class="fas fa-paw"></i> Manage Animals
             </a>
-            <a href="manage_gallery.php" class="<?= isActive('manage_gallery.php') ?>">
-                <i class="fas fa-images"></i> Manage Gallery
-            </a>
-            <a href="manage_podcasts.php" class="<?= isActive('manage_podcasts.php') ?>">
+            <!-- <a href="manage_podcasts.php" class="<?= isActive('manage_podcasts.php') ?>">
                 <i class="fas fa-podcast"></i> Manage Podcasts
-            </a>
+            </a> -->
             <!-- <a href="manage_knowledge.php" class="<?= isActive('manage_knowledge.php') ?>">
                 <i class="fas fa-book"></i> Indigenous Knowledge
             </a> -->
@@ -242,9 +216,9 @@ function isActive($page) {
             <a href="manage-users.php" class="<?= isActive('manage-users.php') ?>">
                 <i class="fas fa-users"></i> Manage Users
             </a>
-            <a href="manage_forum.php" class="<?= isActive('manage_forum.php') ?>">
+            <!-- <a href="manage_forum.php" class="<?= isActive('manage_forum.php') ?>">
                 <i class="fas fa-comments"></i> Manage Forum
-            </a>
+            </a> -->
             <a href="manage_events.php" class="<?= isActive('manage_events.php') ?>">
                 <i class="fas fa-calendar-alt"></i> Manage Events
             </a>

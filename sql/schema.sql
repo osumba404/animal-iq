@@ -237,6 +237,12 @@ CREATE TABLE animal_health_risks (
 
 
 
+
+
+
+
+
+
 -- POSTS & COMMENTS
 CREATE TABLE posts (
     id INT AUTO_INCREMENT PRIMARY KEY,

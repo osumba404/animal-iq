@@ -75,161 +75,38 @@ $location = $geo->fetch(PDO::FETCH_ASSOC);
 $photos = $pdo->prepare("SELECT * FROM animal_photos WHERE animal_id = ?");
 $photos->execute([$animal_id]);
 $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
+
+// Life Data
+$life_stmt = $pdo->prepare("SELECT * FROM animal_life_data WHERE animal_id = ?");
+$life_stmt->execute([$animal_id]);
+$life = $life_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Human Interaction
+$interaction_stmt = $pdo->prepare("SELECT * FROM animal_human_interaction WHERE animal_id = ?");
+$interaction_stmt->execute([$animal_id]);
+$interaction = $interaction_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Defense
+$defense_stmt = $pdo->prepare("SELECT * FROM animal_defense WHERE animal_id = ?");
+$defense_stmt->execute([$animal_id]);
+$defense = $defense_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Health Risks
+$health_stmt = $pdo->prepare("SELECT * FROM animal_health_risks WHERE animal_id = ?");
+$health_stmt->execute([$animal_id]);
+$health = $health_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Facts (multiple rows)
+$facts_stmt = $pdo->prepare("SELECT fact FROM animal_facts WHERE animal_id = ?");
+$facts_stmt->execute([$animal_id]);
+$facts = $facts_stmt->fetchAll(PDO::FETCH_COLUMN);
+
 ?>
 
-<style>
-/* Premium Animal Page Styles */
-.animal-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-}
 
-.animal-header {
-    display: flex;
-    gap: 3rem;
-    margin-bottom: 3rem;
-}
-
-.animal-image {
-    flex: 1;
-    min-width: 300px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-}
-
-.animal-image img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-
-.animal-basic-info {
-    flex: 2;
-}
-
-.animal-title {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: var(--color-primary-dark);
-}
-
-.animal-scientific {
-    font-style: italic;
-    color: var(--color-text-secondary);
-    margin-bottom: 1.5rem;
-    display: block;
-}
-
-.animal-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 2fr));
-    gap: 0.8rem;
-    margin-bottom: 1rem;
-}
-
-.stat-card {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 8px;
-    padding: 1rem;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.5rem;
-}
-
-.stat-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--color-primary-dark);
-}
-
-.status-badge {
-    display: inline-block;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.status-endangered { background: #ff6b6b; color: white; }
-.status-vulnerable { background: #ffb347; color: white; }
-.status-least-concern { background: #77dd77; color: white; }
-
-.section {
-    margin-bottom: 3rem;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 1.5rem;
-    padding-top: 0;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.section-title {
-    font-size: 1.8rem;
-    color: var(--color-primary-dark);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--color-accent-primary);
-}
-
-.grid-2 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.gallery-item {
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.gallery-item:hover {
-    transform: translateY(-5px);
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-
-.gallery-caption {
-    padding: 1rem;
-    background: white;
-}
-
-.error-message {
-    text-align: center;
-    padding: 2rem;
-    color: #ff6b6b;
-    font-size: 1.2rem;
-}
-
-@media (max-width: 768px) {
-    .animal-header {
-        flex-direction: column;
-    }
-    
-    .animal-image {
-        width: 100%;
-    }
-}
-</style>
+<head>
+    <link rel="stylesheet" href="assets/css/pages.css">
+</head>
 
 <div class="animal-container">
     <div class="animal-header">
@@ -343,13 +220,74 @@ $gallery = $photos->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <?php endif; ?>
 
+    <?php if ($life): ?>
+<div class="section">
+    <h2 class="section-title">Life Data</h2>
+    <ul>
+        <?php if ($life['lifespan_years']): ?><li><strong>Lifespan:</strong> <?= $life['lifespan_years'] ?> years</li><?php endif; ?>
+        <?php if ($life['gestation_period_days']): ?><li><strong>Gestation Period:</strong> <?= $life['gestation_period_days'] ?> days</li><?php endif; ?>
+        <?php if ($life['litter_size_avg']): ?><li><strong>Average Litter Size:</strong> <?= $life['litter_size_avg'] ?></li><?php endif; ?>
+        <?php if ($life['maturity_age_years']): ?><li><strong>Maturity Age:</strong> <?= $life['maturity_age_years'] ?> years</li><?php endif; ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+<?php if ($interaction): ?>
+<div class="section">
+    <h2 class="section-title">Human Interaction</h2>
+    <?php if (!empty($interaction['threats'])): ?>
+        <p><strong>Threats:</strong> <?= nl2br(htmlspecialchars($interaction['threats'])) ?></p>
+    <?php endif; ?>
+    <?php if (!empty($interaction['conservation_efforts'])): ?>
+        <p><strong>Conservation Efforts:</strong> <?= nl2br(htmlspecialchars($interaction['conservation_efforts'])) ?></p>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+<?php if ($defense): ?>
+<div class="section">
+    <h2 class="section-title">Defense & Adaptations</h2>
+    <?php if (!empty($defense['defense_mechanisms'])): ?>
+        <p><strong>Defense Mechanisms:</strong> <?= nl2br(htmlspecialchars($defense['defense_mechanisms'])) ?></p>
+    <?php endif; ?>
+    <?php if (!empty($defense['notable_adaptations'])): ?>
+        <p><strong>Notable Adaptations:</strong> <?= nl2br(htmlspecialchars($defense['notable_adaptations'])) ?></p>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+<?php if ($health): ?>
+<div class="section">
+    <h2 class="section-title">Health & Disease</h2>
+    <?php if (!empty($health['common_diseases'])): ?>
+        <p><strong>Common Diseases:</strong> <?= nl2br(htmlspecialchars($health['common_diseases'])) ?></p>
+    <?php endif; ?>
+    <?php if (!empty($health['known_parasites'])): ?>
+        <p><strong>Known Parasites:</strong> <?= nl2br(htmlspecialchars($health['known_parasites'])) ?></p>
+    <?php endif; ?>
+    <p><strong>Zoonotic Potential:</strong> <?= $health['zoonotic_potential'] ? 'Yes' : 'No' ?></p>
+</div>
+<?php endif; ?>
+
+<?php if (!empty($facts)): ?>
+<div class="section">
+    <h2 class="section-title">Interesting Facts</h2>
+    <ul>
+        <?php foreach ($facts as $fact): ?>
+            <li><?= htmlspecialchars($fact) ?></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+
     <?php if ($gallery): ?>
     <div class="section">
         <h2 class="section-title">Gallery</h2>
         <div class="gallery">
             <?php foreach ($gallery as $photo): ?>
             <div class="gallery-item">
-                <img src="uploads/<?= $photo['photo_url'] ?>" alt="<?= htmlspecialchars($photo['caption']) ?>">
+                <img src="../uploads/animals/<?= $photo['photo_url'] ?>" alt="<?= htmlspecialchars($photo['caption']) ?>">
                 <?php if (!empty($photo['caption'])): ?>
                 <div class="gallery-caption">
                     <?= htmlspecialchars($photo['caption']) ?>
