@@ -480,3 +480,36 @@ CREATE TABLE logs (
     occurred_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+
+CREATE TABLE partners (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    description TEXT, -- What they do
+    location VARCHAR(150), -- Where they are based
+    partners_since DATE, -- When they became a partner
+    logo_url VARCHAR(255), -- URL to logo image
+    
+    contact_email VARCHAR(150), -- Optional: contact person
+    website_url VARCHAR(255), -- Optional: link to partner's website
+    status ENUM('active', 'inactive') DEFAULT 'active', -- Whether they are still a partner
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE management_team (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,                  -- Full name of the team member
+    role VARCHAR(100) NOT NULL,                  -- Post / Role / Designation
+    message TEXT,                                 -- "What word they have to say"
+    photo_url VARCHAR(255),                       -- URL to profile picture
+    email VARCHAR(150),                           -- Contact email (optional)
+    linkedin_url VARCHAR(255),                    -- Link to LinkedIn profile
+    status ENUM('active', 'inactive') DEFAULT 'active', -- Whether they are still in the team
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+

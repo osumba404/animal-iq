@@ -80,7 +80,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 <main>
     <!-- About Sections -->
-    <section class="grid-2">
+    <section class="grid-2" style="box-shadow:none">
         <?php if (!empty($settings['homepage_message'])): ?>
             <div class="card">
                 <div class="card-body">
@@ -109,7 +109,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     </section>
 
     <!-- Animal of the Day -->
-    <section>
+    <section style="box-shadow:none">
         <?php if ($animal): ?>
             <div class="animal-of-day">
                 <img src="uploads/animals/<?= htmlspecialchars($animal['main_photo']) ?>" 
@@ -132,7 +132,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     </section>
 
     <!-- Did You Know? -->
-    <section>
+    <section style="box-shadow:none">
         <div class="trivia-block">
             <div class="trivia-content">
                 <?= htmlspecialchars($trivia ?: "Elephants can't jump!") ?>

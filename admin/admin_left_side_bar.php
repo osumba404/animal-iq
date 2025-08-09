@@ -203,12 +203,9 @@ function isActive($page) {
             <a href="manage_animals.php" class="<?= isActive('manage_animals.php') ?>">
                 <i class="fas fa-paw"></i> Manage Animals
             </a>
-            <!-- <a href="manage_podcasts.php" class="<?= isActive('manage_podcasts.php') ?>">
+            <a href="manage_podcasts.php" class="<?= isActive('manage_podcasts.php') ?>">
                 <i class="fas fa-podcast"></i> Manage Podcasts
-            </a> -->
-            <!-- <a href="manage_knowledge.php" class="<?= isActive('manage_knowledge.php') ?>">
-                <i class="fas fa-book"></i> Indigenous Knowledge
-            </a> -->
+            </a> 
         </div>
         
         <div class="nav-section">
@@ -216,14 +213,20 @@ function isActive($page) {
             <a href="manage-users.php" class="<?= isActive('manage-users.php') ?>">
                 <i class="fas fa-users"></i> Manage Users
             </a>
-            <!-- <a href="manage_forum.php" class="<?= isActive('manage_forum.php') ?>">
+            <a href="manage_forum.php" class="<?= isActive('manage_forum.php') ?>">
                 <i class="fas fa-comments"></i> Manage Forum
-            </a> -->
+            </a>
             <a href="manage_events.php" class="<?= isActive('manage_events.php') ?>">
                 <i class="fas fa-calendar-alt"></i> Manage Events
             </a>
             <a href="manage_badges.php" class="<?= isActive('manage_badges.php') ?>">
                 <i class="fas fa-award"></i> Manage Badges
+            </a>
+            <a href="management_team.php" class="<?= isActive('manage_badges.php') ?>">
+                <i class="fas fa-award"></i> Management Team
+            </a>
+            <a href="manage_partners.php" class="<?= isActive('manage_badges.php') ?>">
+                <i class="fas fa-award"></i> Manage Partners
             </a>
         </div>
         
