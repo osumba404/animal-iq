@@ -404,6 +404,9 @@ CREATE TABLE daily_feature (
     FOREIGN KEY (animal_id) REFERENCES animals(id)
 );
 
+
+
+
 -- BADGES & GAMIFICATION
 CREATE TABLE badges (
     id INT AUTO_INCREMENT PRIMARY KEY,

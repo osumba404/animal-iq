@@ -1,0 +1,112 @@
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.profile-card {
+    max-width: 600px;
+    background: #fff;
+    margin: auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    font-weight: bold;
+    color: #555;
+    overflow: hidden;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+h2 {
+    margin: 10px 0;
+    font-size: 26px;
+}
+
+p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.badges {
+    margin-top: 15px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f3f7;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin: 5px;
+    border: 1px solid #ddd;
+}
+
+.badge-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+}
+
+form {
+    margin-top: 25px;
+    text-align: left;
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+form input[type="text"],
+form textarea,
+form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+form button {
+    background: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.3s ease;
+}
+
+form button:hover {
+    background: #45a049;
+}

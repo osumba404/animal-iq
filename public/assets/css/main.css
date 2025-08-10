@@ -2,7 +2,7 @@
 
 :root {
   /* Core Brand Colors */
-  --color-primary: #013221;        /* Deep jungle green (main brand color) */
+ --color-primary: #013221;         /* Deep jungle green (main brand color) */
   --color-primary-light: #10593c;  /* Lighter green (secondary brand color) */
   --color-primary-lighter: #1a8a6a; /* Highlight teal (accent) */
   --color-primary-dark: #002418;   /* Darker green (for hover states) */

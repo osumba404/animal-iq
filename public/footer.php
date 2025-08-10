@@ -5,10 +5,12 @@ $stmt->execute();
 $email = $stmt->fetchColumn();
 ?>
 
+
+<!-- <link rel="stylesheet" href="assets/css/main.css"> -->
 <style>
 /* Premium Footer Styles */
 footer {
-    background: rgba(1, 50, 33, 0.9); /* Dark green with transparency */
+        background-color: var(--color-primary-dark); /* Dark green with transparency */
     backdrop-filter: blur(10px);
     color: white;
     padding: 1.5rem 2rem;

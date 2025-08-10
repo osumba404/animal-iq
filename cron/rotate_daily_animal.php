@@ -3,62 +3,44 @@
 
 require_once '../includes/db.php';
 
-function rotateAnimalOfTheDay(PDO $pdo) {
-    // Check if today’s animal is already set
-    $today = date('Y-m-d');
-    $stmt = $pdo->prepare("SELECT * FROM animal_of_the_day WHERE date = ?");
-    $stmt->execute([$today]);
-    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+function getAnimalOfTheDay(PDO $pdo, string $timezone) {
+    // Get the local date for that timezone
+    $dateObj = new DateTime('now', new DateTimeZone($timezone));
+    $today = $dateObj->format('Y-m-d');
 
-    if ($existing) return; // Already rotated today
+    // Cache file per timezone
+    $cacheFile = __DIR__ . "/../cache/animal_{$timezone}_{$today}.json";
 
-    // Get unused animals
+    // If cache exists, load and return
+    if (file_exists($cacheFile)) {
+        $data = json_decode(file_get_contents($cacheFile), true);
+        if ($data && isset($data['id'])) {
+            return $data;
+        }
+    }
+
+    // Pick a random approved animal
     $stmt = $pdo->query("
-        SELECT * FROM animals 
-        WHERE id NOT IN (SELECT animal_id FROM animal_rotation_log)
-          AND status = 'approved'
-        ORDER BY id ASC
+        SELECT * FROM animals
+        WHERE status = 'approved'
+        ORDER BY RAND()
         LIMIT 1
     ");
     $animal = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // If all animals are exhausted, reset rotation log
-    if (!$animal) {
-        $pdo->exec("DELETE FROM animal_rotation_log");
-
-        // Try again after reset
-        $stmt = $pdo->query("
-            SELECT * FROM animals 
-            WHERE status = 'approved'
-            ORDER BY id ASC
-            LIMIT 1
-        ");
-        $animal = $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
     if ($animal) {
-        // Update the animal of the day
-        $stmt = $pdo->prepare("UPDATE animal_of_the_day SET animal_id = ?, date = ?");
-        $stmt->execute([$animal['id'], $today]);
-
-        // Log it
-        $stmt = $pdo->prepare("INSERT INTO animal_rotation_log (animal_id, shown_on) VALUES (?, ?)");
-        $stmt->execute([$animal['id'], $today]);
+        // Save to cache
+        if (!is_dir(dirname($cacheFile))) {
+            mkdir(dirname($cacheFile), 0777, true);
+        }
+        file_put_contents($cacheFile, json_encode($animal));
     }
+
+    return $animal;
 }
 
-rotateAnimalOfTheDay($pdo);
+// Example usage
+$timezone = 'America/New_York'; // This should come from the user’s location
+$animalOfTheDay = getAnimalOfTheDay($pdo, $timezone);
 
-
-function getAnimalOfTheDay(PDO $pdo) {
-    $today = date('Y-m-d');
-    $stmt = $pdo->prepare("
-        SELECT a.*
-        FROM animal_of_the_day aot
-        JOIN animals a ON a.id = aot.animal_id
-        WHERE aot.date = ?
-    ");
-    $stmt->execute([$today]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
 
