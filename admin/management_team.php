@@ -15,7 +15,7 @@ function uploadPhoto($file) {
         $fileName = time() . "_" . basename($file["name"]);
         $targetFile = $targetDir . $fileName;
         if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-            return "uploads/management_team/" . $fileName; // relative path for DB
+            return "../uploads/management_team/" . $fileName; // relative path for DB
         }
     }
     return null;
@@ -28,14 +28,17 @@ if (isset($_POST['add_member'])) {
     $message = $_POST['message'];
     $email = $_POST['email'];
     $linkedin_url = $_POST['linkedin_url'];
+    $ig_url = $_POST['ig_url'];
+    $fb_url = $_POST['fb_url'];
+    $x_url = $_POST['x_url'];
     $status = $_POST['status'];
     $photo_url = uploadPhoto($_FILES['photo']);
 
     $insert = $pdo->prepare("
-        INSERT INTO management_team (name, role, message, email, linkedin_url, photo_url, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO management_team (name, role, message, email, linkedin_url, ig_url, fb_url, x_url, photo_url, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    $insert->execute([$name, $role, $message, $email, $linkedin_url, $photo_url, $status]);
+    $insert->execute([$name, $role, $message, $email, $linkedin_url, $ig_url, $fb_url, $x_url, $photo_url, $status]);
 
     header("Location: manage_team.php");
     exit;
@@ -49,13 +52,16 @@ if (isset($_POST['edit_member'])) {
     $message = $_POST['message'];
     $email = $_POST['email'];
     $linkedin_url = $_POST['linkedin_url'];
+    $ig_url = $_POST['ig_url'];
+    $fb_url = $_POST['fb_url'];
+    $x_url = $_POST['x_url'];
     $status = $_POST['status'];
 
     $photo_url = uploadPhoto($_FILES['photo']);
     if ($photo_url) {
         $update = $pdo->prepare("
             UPDATE management_team SET 
-                name=?, role=?, message=?, email=?, linkedin_url=?, photo_url=?, status=? 
+                name=?, role=?, message=?, email=?, linkedin_url=?, ig_url=?, fb_url=?, x_url=?, photo_url=?, status=? 
             WHERE id=?
         ");
         $update->execute([$name, $role, $message, $email, $linkedin_url, $photo_url, $status, $memberId]);
@@ -65,7 +71,7 @@ if (isset($_POST['edit_member'])) {
                 name=?, role=?, message=?, email=?, linkedin_url=?, status=? 
             WHERE id=?
         ");
-        $update->execute([$name, $role, $message, $email, $linkedin_url, $status, $memberId]);
+        $update->execute([$name, $role, $message, $email, $linkedin_url, $ig_url, $fb_url, $x_url, $status, $memberId]);
     }
 
     header("Location: manage_team.php");
@@ -119,6 +125,9 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>Message</th>
             <th>Email</th>
             <th>LinkedIn</th>
+            <th>IG</th>
+            <th>FB</th>
+            <th>X</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -132,6 +141,9 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= htmlspecialchars(substr($m['message'], 0, 50)) ?>...</td>
                 <td><?= htmlspecialchars($m['email']) ?></td>
                 <td><?php if ($m['linkedin_url']): ?><a href="<?= htmlspecialchars($m['linkedin_url']) ?>" target="_blank">Profile</a><?php endif; ?></td>
+                <td><?php if ($m['ig_url']): ?><a href="<?= htmlspecialchars($m['ig_url']) ?>" target="_blank">Profile</a><?php endif; ?></td>
+                <td><?php if ($m['fb_url']): ?><a href="<?= htmlspecialchars($m['fb_url']) ?>" target="_blank">Profile</a><?php endif; ?></td>
+                <td><?php if ($m['x_url']): ?><a href="<?= htmlspecialchars($m['x_url']) ?>" target="_blank">Profile</a><?php endif; ?></td>
                 <td><?= ucfirst($m['status']) ?></td>
                 <td>
                     <button onclick='openEditModal(<?= json_encode($m) ?>)' class="btn-edit"><i class="fas fa-edit"></i></button>
@@ -155,6 +167,9 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="form-group"><label>Message</label><textarea name="message" required></textarea></div>
             <div class="form-group"><label>Email</label><input type="email" name="email"></div>
             <div class="form-group"><label>LinkedIn URL</label><input type="url" name="linkedin_url"></div>
+            <div class="form-group"><label>IG URL</label><input type="url" name="ig_url"></div>
+            <div class="form-group"><label>FB URL</label><input type="url" name="fb_url"></div>
+            <div class="form-group"><label>X URL</label><input type="url" name="x_url"></div>
             <div class="form-group"><label>Photo</label><input type="file" name="photo"></div>
             <div class="form-group"><label>Status</label><select name="status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
             <button type="submit" class="btn btn-primary">Add Member</button>
@@ -175,6 +190,9 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="form-group"><label>Message</label><textarea name="message" required></textarea></div>
             <div class="form-group"><label>Email</label><input type="email" name="email"></div>
             <div class="form-group"><label>LinkedIn URL</label><input type="url" name="linkedin_url"></div>
+            <div class="form-group"><label>IG URL</label><input type="url" name="ig_url"></div>
+            <div class="form-group"><label>FB URL</label><input type="url" name="fb_url"></div>
+            <div class="form-group"><label>X URL</label><input type="url" name="x_url"></div>
             <div class="form-group"><label>Photo</label><input type="file" name="photo"></div>
             <div class="form-group"><label>Status</label><select name="status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
             <button type="submit" class="btn btn-primary">Update Member</button>
@@ -193,6 +211,9 @@ function openEditModal(data) {
     document.querySelector('#editModal [name="message"]').value = data.message;
     document.querySelector('#editModal [name="email"]').value = data.email;
     document.querySelector('#editModal [name="linkedin_url"]').value = data.linkedin_url;
+    document.querySelector('#editModal [name="ig_url"]').value = data.ig_url;
+    document.querySelector('#editModal [name="fb_url"]').value = data.fb_url;
+    document.querySelector('#editModal [name="x_url"]').value = data.x_url;
     document.querySelector('#editModal [name="status"]').value = data.status;
 }
 </script>

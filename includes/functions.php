@@ -169,7 +169,7 @@ function getUpcomingEvents($pdo, $limit = 3) {
 
 function getHighlightedEndangeredSpecies($pdo, $limit = 3) {
     $stmt = $pdo->prepare("
-        SELECT animals.common_name, animals.main_photo
+        SELECT animals.id, animals.common_name, animals.main_photo, animals.scientific_name, animals.appearance
         FROM animals
         JOIN species_statuses ON animals.species_status_id = species_statuses.id
         WHERE species_status_id = 2
@@ -183,5 +183,71 @@ function getHighlightedEndangeredSpecies($pdo, $limit = 3) {
 
 
 
+function getManagementTeam($pdo) {
+     $stmt = $pdo->prepare("
+        SELECT management_team.name, 
+        management_team.role, 
+        management_team.message, 
+        management_team.photo_url, 
+        management_team.linkedin_url,
+        management_team.ig_url,
+        management_team.fb_url,
+        management_team.x_url        
+        FROM management_team        
+        WHERE status = 'active' 
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
+
+// fetching classes
+function getRandomAnimalsByClass(PDO $pdo) {
+    $classesSql = "SELECT id, name FROM classes ORDER BY name ASC";
+    $stmt = $pdo->query($classesSql);
+    $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $data = [];
+
+    foreach ($classes as $class) {
+        $classId = $class['id'];
+        $className = htmlspecialchars($class['name']);
+
+        // Random animal for this class
+        $animalQuery = "
+            SELECT a.id, a.common_name, a.main_photo
+            FROM animals a
+            JOIN taxonomy t ON a.id = t.animal_id
+            JOIN species s ON t.species_id = s.id
+            JOIN genera g ON s.genus_id = g.id
+            JOIN families f ON g.family_id = f.id
+            JOIN orders o ON f.order_id = o.id
+            JOIN classes c ON o.class_id = c.id
+            WHERE c.id = :class_id
+              AND a.status = 'approved'
+              AND a.main_photo IS NOT NULL
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+
+        $animalStmt = $pdo->prepare($animalQuery);
+        $animalStmt->execute(['class_id' => $classId]);
+        $animal = $animalStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($animal) {
+            $data[] = [
+                'class_id' => $classId,
+                'class_name' => $className,
+                'animal_id' => $animal['id'],
+                'animal_name' => htmlspecialchars($animal['common_name']),
+                'animal_photo' => "../uploads/animals/" . htmlspecialchars($animal['main_photo'])
+            ];
+        }
+    }
+
+    return $data;
+}
 
 ?>

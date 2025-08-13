@@ -174,6 +174,8 @@ $statuses = $pdo->query("SELECT id, label FROM species_statuses ORDER BY FIELD(l
     <label>Photo 1:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
     <label>Photo 2:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
     <label>Photo 3:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
+    <label>Photo 4:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
+    <label>Photo 5:</label><input type="file" name="photos[]"><input type="text" name="captions[]" placeholder="Caption"><br>
   </fieldset>
 
   <br><input type="submit" value="Add Animal">

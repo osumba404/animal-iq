@@ -14,6 +14,11 @@ $events = getUpcomingEvents($pdo);
 $trivia = getRandomTrivia($pdo, 2);
 $endangered = getHighlightedEndangeredSpecies($pdo, 3);
 
+$randomAnimals = getRandomAnimalsByClass($pdo);
+
+
+
+
 // dynamic data
 $stmt = $pdo->query("SELECT `key`, `value` FROM settings");
 $settings = [];
@@ -86,112 +91,38 @@ $partners = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- about us -->
 
 <h2 class="section-heading">Discover the Animal Kingdom</h2>
+<?php
+if (!empty($randomAnimals)):
+    foreach ($randomAnimals as $item):
+        ?>
 
-<main class="about-section">
-    <!-- About Us - Image Left -->
-    <?php if (!empty($settings['homepage_message'])): ?>
-    <div class="about-row">
-        <div class="about-image-container">
-            <?php if (!empty($settings['about_image'])): ?>
-                <img src="<?= htmlspecialchars($settings['about_image']) ?>" alt="About Us" class="about-image">
-            <?php else: ?>
-                <img src="assets/img/elephant.webp" alt="African Savanah Elephant" class="about-image">
-            <?php endif; ?>
-        </div>
-        <div class="about-content">
-            <div class="card-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
+        <div class="animal-card" style="position:relative; display:inline-block; margin:10px;">
+            <img src="<?php echo $item['animal_photo']; ?>" 
+                 alt="<?php echo $item['animal_name']; ?>" 
+                 style="width:300px; height:200px; object-fit:cover; border-radius:8px;">
+            
+            <!-- Top Overlay -->
+            <div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.6); 
+                        color:#fff; padding:5px 10px; border-radius:5px;">
+                <?php echo $item['class_name']; ?>
             </div>
-            <h3 class="about-title">About Us</h3>
-            <div class="about-text"><?= nl2br(htmlspecialchars($settings['homepage_message'])) ?></div>
-        </div>
-    </div>
-    <?php endif; ?>
 
-    <!-- Vision - Image Right -->
-    <?php if (!empty($settings['site_vision'])): ?>
-    <div class="about-row reverse">
-        <div class="about-image-container">
-            <?php if (!empty($settings['vision_image'])): ?>
-                <img src="<?= htmlspecialchars($settings['vision_image']) ?>" alt="Our Vision" class="about-image">
-            <?php else: ?>
-                <img src="assets/img/dolphin.jpeg" alt="Pandas" class="about-image">
-            <?php endif; ?>
-        </div>
-        <div class="about-content">
-            <div class="card-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 8v4l3 3"></path>
-                </svg>
+            <!-- Bottom Overlay -->
+            <div style="position:absolute; bottom:10px; left:10px; background:rgba(255,255,255,0.85); 
+                        color:#000; padding:5px 10px; border-radius:5px;">
+                <a href="encyclopedia.php?class_id=<?php echo $item['class_id']; ?>" 
+                   style="color:#000; text-decoration:none;">
+                    View other <?php echo $item['class_name']; ?>
+                </a>
             </div>
-            <h3 class="about-title">Our Vision</h3>
-            <div class="about-text"><?= nl2br(htmlspecialchars($settings['site_vision'])) ?></div>
         </div>
-    </div>
-    <?php endif; ?>
+<?php
+    endforeach;
+else:
+    echo "<p>No animals found.</p>";
+endif;
 
-    <!-- Mission - Image Left -->
-    <?php if (!empty($settings['site_mission'])): ?>
-    <div class="about-row">
-        <div class="about-image-container">
-            <?php if (!empty($settings['mission_image'])): ?>
-                <img src="<?= htmlspecialchars($settings['mission_image']) ?>" alt="Our Mission" class="about-image">
-            <?php else: ?>
-                <img src="assets/img/tiger.avif" alt="Jungle Tiger" class="about-image">
-            <?php endif; ?>
-        </div>
-        <div class="about-content">
-            <div class="card-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-            </div>
-            <h3 class="about-title">Our Mission</h3>
-            <div class="about-text"><?= nl2br(htmlspecialchars($settings['site_mission'])) ?></div>
-        </div>
-    </div>
-    <?php endif; ?>
-</main>
-
-
-<!-- Partners -->
-    
-<section class="partners-compact">
-    <div class="partners-container">
-        <h2 class="section-title">Our Partners</h2>
-        
-        <?php if ($partners): ?>
-        <div class="partners-logos">
-            <?php foreach ($partners as $partner): ?>
-                <?php if ($partner['logo_url']): ?>
-                <div class="partner-logo-wrap">
-                    <img src="../<?= htmlspecialchars($partner['logo_url']) ?>" 
-                         alt="<?= htmlspecialchars($partner['name']) ?> Logo" 
-                         class="partner-logo"
-                         loading="lazy"
-                         title="<?= htmlspecialchars($partner['name']) ?>">
-                </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
-        </div>
-        <?php else: ?>
-        <div class="no-partners">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            <p>No partners to display</p>
-        </div>
-        <?php endif; ?>
-    </div>
-</section>
+?>
 
 
  <!-- Animal of the Day -->
@@ -447,7 +378,7 @@ $partners = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($endangered as $animal): ?>
         <article class="species-card">
             <div class="species-image-container">
-                <img src="assets/images/animals/<?= htmlspecialchars($animal['main_photo']) ?>" 
+                <img src="../uploads/animals/<?= htmlspecialchars($animal['main_photo']) ?>" 
                      alt="<?= htmlspecialchars($animal['common_name']) ?>" 
                      class="species-image"
                      loading="lazy">
@@ -457,13 +388,10 @@ $partners = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="species-content">
                 <h3 class="species-name"><?= htmlspecialchars($animal['common_name']) ?></h3>
                 <p class="species-scientific"><?= htmlspecialchars($animal['scientific_name']) ?></p>
-                <p class="species-description"><?= htmlspecialchars(substr($animal['short_description'], 0, 100)) . '...'; ?></p>
-                <a href="animal.php?id=<?= $animal['id'] ?>" class="species-link">
-                    Learn more
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
+                <p class="species-description"><?= htmlspecialchars(substr($animal['appearance'], 0, 100)) . '...'; ?></p>
+               
+                 <a href="animal.php?id=<?= $animal['id'] ?>" class="animal-link">
+                    Learn more about <?= htmlspecialchars($animal['common_name']) ?>
             </div>
         </article>
         <?php endforeach; ?>

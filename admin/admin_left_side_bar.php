@@ -13,7 +13,7 @@ function isActive($page) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
             .sidebar-header {
-                padding: 1.5rem;
+                padding: 1rem;
                 border-bottom: 1px solid var(--color-primary-accent);
                 margin-bottom: 1rem;
                 position: sticky;
@@ -198,48 +198,51 @@ function isActive($page) {
         <div class="nav-section">
             <h3 class="nav-section-title">Content</h3>
             <a href="manage_posts.php" class="<?= isActive('manage_posts.php') ?>">
-                <i class="fas fa-newspaper"></i> Manage Posts
+                <i class="fas fa-newspaper"></i>Posts,  Bloqs & Stories
             </a>
             <a href="manage_animals.php" class="<?= isActive('manage_animals.php') ?>">
-                <i class="fas fa-paw"></i> Manage Animals
+                <i class="fas fa-paw"></i> Animals
             </a>
             <a href="manage_podcasts.php" class="<?= isActive('manage_podcasts.php') ?>">
-                <i class="fas fa-podcast"></i> Manage Podcasts
+                <i class="fas fa-podcast"></i> Podcasts
+            </a> 
+            <a href="manage_gallery.php" class="<?= isActive('manage_podcasts.php') ?>">
+                <i class="fas fa-podcast"></i> Gallery
             </a> 
         </div>
         
         <div class="nav-section">
             <h3 class="nav-section-title">Community</h3>
             <a href="manage-users.php" class="<?= isActive('manage-users.php') ?>">
-                <i class="fas fa-users"></i> Manage Users
+                <i class="fas fa-users"></i> Our Users
             </a>
             <a href="manage_forum.php" class="<?= isActive('manage_forum.php') ?>">
-                <i class="fas fa-comments"></i> Manage Forum
+                <i class="fas fa-comments"></i> Forums
             </a>
             <a href="manage_events.php" class="<?= isActive('manage_events.php') ?>">
-                <i class="fas fa-calendar-alt"></i> Manage Events
+                <i class="fas fa-calendar-alt"></i>Community Events
             </a>
             <a href="manage_badges.php" class="<?= isActive('manage_badges.php') ?>">
-                <i class="fas fa-award"></i> Manage Badges
+                <i class="fas fa-award"></i> Community Badges
             </a>
             <a href="management_team.php" class="<?= isActive('manage_badges.php') ?>">
                 <i class="fas fa-award"></i> Management Team
             </a>
             <a href="manage_partners.php" class="<?= isActive('manage_badges.php') ?>">
-                <i class="fas fa-award"></i> Manage Partners
+                <i class="fas fa-award"></i> Our Partners
             </a>
         </div>
         
         <div class="nav-section">
             <h3 class="nav-section-title">System</h3>
             <a href="manage_quizzes.php" class="<?= isActive('manage_quizzes.php') ?>">
-                <i class="fas fa-question-circle"></i> Manage Quizzes
+                <i class="fas fa-question-circle"></i> Quizzes and Trivias
             </a>
             <a href="manage_species_statuses.php" class="<?= isActive('manage_species_statuses.php') ?>">
                 <i class="fas fa-list-ol"></i> Species Statuses
             </a>
             <a href="manage_taxonomy.php" class="<?= isActive('manage_taxonomy.php') ?>">
-                <i class="fas fa-sitemap"></i> Manage Taxonomy
+                <i class="fas fa-sitemap"></i> Taxonomies
             </a>
             <a href="site_settings.php" class="<?= isActive('site_settings.php') ?>">
                 <i class="fas fa-cog"></i> Site Settings

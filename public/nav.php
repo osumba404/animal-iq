@@ -424,12 +424,16 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       <li class="nav-item">
         <a href="index.php" class="nav-link">Home</a>
       </li>
+
+      <li class="nav-item">
+        <a href="about.php" class="nav-link">About Us</a>
+      </li>
       
       <li class="nav-item nav-dropdown">
         <a href="#" class="nav-link nav-dropdown-toggle">Learn</a>
         <ul class="nav-dropdown-menu">
           <li><a href="encyclopedia.php" class="nav-dropdown-item">Explore Wildlife</a></li>
-          <li><a href="quizzes.php" class="nav-dropdown-item">Quizzes</a></li>
+          <li><a href="quizzes.php" class="nav-dropdown-item">Quizzes and Trivias</a></li>
         </ul>
       </li>
       

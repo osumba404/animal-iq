@@ -3,6 +3,7 @@ session_start();
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once 'header.php';
+require_once 'nav.php';
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("<div class='error-message'>Invalid thread ID.</div>");
@@ -10,49 +11,43 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $thread_id = (int) $_GET['id'];
 
-// UPDATE: Edit post if edit mode triggered
-if (isset($_GET['edit']) && is_logged_in()) {
+// Edit post
+if (isset($_GET['edit']) && isset($_SESSION['user']['id'])) {
     $edit_id = (int)$_GET['edit'];
     $stmt = $pdo->prepare("SELECT * FROM forum_posts WHERE id = ? AND author_id = ?");
-    $stmt->execute([$edit_id, $_SESSION['user_id']]);
+    $stmt->execute([$edit_id, $_SESSION['user']['id']]);
     $edit_post = $stmt->fetch();
     if (!$edit_post) {
         die("<div class='error-message'>Edit not allowed.</div>");
     }
 }
 
-// UPDATE: Delete post if delete request triggered
-if (isset($_GET['delete']) && is_logged_in()) {
+// Delete post
+if (isset($_GET['delete']) && isset($_SESSION['user']['id'])) {
     $delete_id = (int)$_GET['delete'];
     $stmt = $pdo->prepare("DELETE FROM forum_posts WHERE id = ? AND author_id = ?");
-    $stmt->execute([$delete_id, $_SESSION['user_id']]);
-    header("Location: topic.php?id=$thread_id");
-    exit;
+    $stmt->execute([$delete_id, $_SESSION['user']['id']]);
 }
 
-// Handle reply submit (new or edit)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && is_logged_in()) {
+// Handle reply submit
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user']['id'])) {
     $content = trim($_POST['content'] ?? '');
     if (!empty($content)) {
         if (isset($_POST['edit_id'])) {
-            // Update existing post
             $edit_id = (int)$_POST['edit_id'];
             $stmt = $pdo->prepare("UPDATE forum_posts SET content = ? WHERE id = ? AND author_id = ?");
-            $stmt->execute([$content, $edit_id, $_SESSION['user_id']]);
+            $stmt->execute([$content, $edit_id, $_SESSION['user']['id']]);
         } else {
-            // Insert new reply
             $stmt = $pdo->prepare("INSERT INTO forum_posts (thread_id, author_id, content) VALUES (?, ?, ?)");
-            $stmt->execute([$thread_id, $_SESSION['user_id'], $content]);
-
+            $stmt->execute([$thread_id, $_SESSION['user']['id'], $content]);
             $pdo->prepare("UPDATE forum_threads SET last_activity_at = NOW() WHERE id = ?")
-                 ->execute([$thread_id]);
+                ->execute([$thread_id]);
         }
-        header("Location: topic.php?id=$thread_id");
-        exit;
+
     }
 }
 
-// Fetch thread info
+// Fetch thread
 $stmt = $pdo->prepare("SELECT ft.*, u.name, u.profile_picture FROM forum_threads ft 
                         JOIN users u ON ft.author_id = u.id 
                         WHERE ft.id = ?");
@@ -69,10 +64,9 @@ $stmt = $pdo->prepare("SELECT p.*, u.name, u.profile_picture FROM forum_posts p
                         WHERE p.thread_id = ? ORDER BY p.created_at ASC");
 $stmt->execute([$thread_id]);
 $posts = $stmt->fetchAll();
-
-require_once 'header.php';
-require_once 'nav.php';
 ?>
+
+
 
 <style>
 /* Premium Thread Page Styling */
@@ -261,24 +255,50 @@ require_once 'nav.php';
     padding: 1rem;
   }
 }
+
+
+/* Container for edit/delete buttons */
+.post-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+/* Links style */
+.post-actions a {
+    text-decoration: none;
+    color: #0077cc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Hover effect */
+.post-actions a:hover {
+    background: #0077cc;
+    color: #fff;
+}
+
+/* Optional: make delete link red */
+.post-actions a[href*="delete"] {
+    color: #cc0000;
+}
+
+.post-actions a[href*="delete"]:hover {
+    background: #cc0000;
+    color: #fff;
+}
+
 </style>
 
 <div class="thread-container">
   <header class="thread-header">
     <h1 class="thread-title"><?php echo htmlspecialchars($thread['title']); ?></h1>
     <div class="thread-meta">
-      <div class="thread-meta-item">
-        <span>👤</span>
-        <span><?php echo htmlspecialchars($thread['name']); ?></span>
-      </div>
-      <div class="thread-meta-item">
-        <span>👁️</span>
-        <span><?php echo number_format($thread['views']); ?> views</span>
-      </div>
-      <div class="thread-meta-item">
-        <span>🕒</span>
-        <span><?php echo date('F j, Y \a\t g:i A', strtotime($thread['last_activity_at'])); ?></span>
-      </div>
+      <div class="thread-meta-item">👤 <?php echo htmlspecialchars($thread['name']); ?></div>
+      <div class="thread-meta-item">👁️ <?php echo number_format($thread['views']); ?> views</div>
+      <div class="thread-meta-item">🕒 <?php echo date('F j, Y \a\t g:i A', strtotime($thread['last_activity_at'])); ?></div>
     </div>
   </header>
 
@@ -286,49 +306,107 @@ require_once 'nav.php';
     <?php foreach ($posts as $post): ?>
       <div class="post-card" id="post-<?php echo $post['id']; ?>">
         <div class="post-header">
-          <img src="<?php echo htmlspecialchars($post['profile_picture']); ?>" class="post-avatar" alt="<?php echo htmlspecialchars($post['name']); ?>">
+          <img src="../uploads/profile_pics/<?php echo htmlspecialchars($post['profile_picture']); ?>" class="post-avatar" alt="<?php echo htmlspecialchars($post['name']); ?>">
           <div>
             <div class="post-author"><?php echo htmlspecialchars($post['name']); ?></div>
             <div class="post-time"><?php echo date('F j, Y \a\t g:i A', strtotime($post['created_at'])); ?></div>
           </div>
         </div>
-        
-        <div class="post-content">
-          <?php echo nl2br(htmlspecialchars($post['content'])); ?>
-        </div>
-        
-        <?php if (is_logged_in() && $_SESSION['user_id'] == $post['author_id']): ?>
+        <div class="post-content"><?php echo nl2br(htmlspecialchars($post['content'])); ?></div>
+        <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] == $post['author_id']): ?>
           <div class="post-actions">
-            <a href="?id=<?php echo $thread_id; ?>&edit=<?php echo $post['id']; ?>" class="post-action">
-              <span>✏️</span> Edit
-            </a>
-            <a href="?id=<?php echo $thread_id; ?>&delete=<?php echo $post['id']; ?>" class="post-action" onclick="return confirm('Are you sure you want to delete this post?')">
-              <span>🗑️</span> Delete
-            </a>
+            <a href="#" class="edit-link" data-post-id="<?php echo $post['id']; ?>" data-post-content="<?php echo htmlspecialchars($post['content']); ?>">✏️ Edit</a>
+            <a href="?id=<?php echo $thread_id; ?>&delete=<?php echo $post['id']; ?>" onclick="return confirm('Are you sure?')">🗑️ Delete</a>
           </div>
         <?php endif; ?>
+
       </div>
     <?php endforeach; ?>
   </div>
 
-  <?php if (is_logged_in()): ?>
-    <div class="reply-form-container">
-      <h3 class="reply-form-title"><?php echo isset($edit_post) ? "✏️ Edit Your Post" : "💬 Reply to This Thread"; ?></h3>
-      <form method="post">
-        <textarea name="content" class="reply-textarea" required><?php echo isset($edit_post) ? htmlspecialchars($edit_post['content']) : ''; ?></textarea>
-        <?php if (isset($edit_post)): ?>
-          <input type="hidden" name="edit_id" value="<?php echo $edit_post['id']; ?>">
-        <?php endif; ?>
-        <button type="submit" class="reply-submit">
-          <?php echo isset($edit_post) ? "Update Post" : "Post Reply"; ?>
-        </button>
-      </form>
-    </div>
-  <?php else: ?>
-    <div class="login-prompt">
-      <p><a href="login.php">Login</a> to participate in this discussion</p>
-    </div>
-  <?php endif; ?>
+  <div id="participation-section">
+    <?php if (isset($_SESSION['user']['id'])): ?>
+      <button id="show-reply-form" class="reply-submit">💬 Reply to This Thread</button>
+      <div id="reply-form" style="display:none; margin-top:10px;">
+        <form method="post">
+          <textarea name="content" class="reply-textarea" required><?php echo isset($edit_post) ? htmlspecialchars($edit_post['content']) : ''; ?></textarea>
+          <?php if (isset($edit_post)): ?>
+            <input type="hidden" name="edit_id" value="<?php echo $edit_post['id']; ?>">
+          <?php endif; ?>
+          <button type="submit" class="reply-submit"><?php echo isset($edit_post) ? "Update Post" : "Post Reply"; ?></button>
+        </form>
+      </div>
+    <?php else: ?>
+      <div class="login-prompt">
+        <p><a href="login.php">Login</a> to participate in this discussion</p>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <!-- Edit Post Modal -->
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:white; padding:20px; border-radius:10px; max-width:500px; width:90%; position:relative;">
+    <h3>Edit Post</h3>
+    <form method="post" id="editPostForm">
+      <textarea name="content" id="editContent" class="reply-textarea" required></textarea>
+      <input type="hidden" name="edit_id" id="editId">
+      <div style="margin-top:10px; display:flex; gap:10px;">
+        <button type="submit" class="reply-submit">Update Post</button>
+        <button type="button" id="closeEditModal" style="background:#ccc; border:none; padding:0.8rem 1.5rem; border-radius:50px; cursor:pointer;">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const replyBtn = document.getElementById("show-reply-form");
+    const replyForm = document.getElementById("reply-form");
+    if (replyBtn) {
+        replyBtn.addEventListener("click", function() {
+            const isHidden = replyForm.style.display === "none";
+            replyForm.style.display = isHidden ? "block" : "none";
+            if (isHidden) {
+                replyForm.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Edit modal elements
+    const editModal = document.getElementById("editModal");
+    const editContent = document.getElementById("editContent");
+    const editId = document.getElementById("editId");
+    const closeEditModal = document.getElementById("closeEditModal");
+
+    // Open modal on edit click
+    document.querySelectorAll(".edit-link").forEach(link => {
+        link.addEventListener("click", function(e) {
+            e.preventDefault();
+            editContent.value = this.getAttribute("data-post-content");
+            editId.value = this.getAttribute("data-post-id");
+            editModal.style.display = "flex";
+        });
+    });
+
+    // Close modal
+    closeEditModal.addEventListener("click", function() {
+        editModal.style.display = "none";
+    });
+
+    // Close modal on outside click
+    editModal.addEventListener("click", function(e) {
+        if (e.target === editModal) {
+            editModal.style.display = "none";
+        }
+    });
+});
+</script>
+
 
 <?php require_once 'footer.php'; ?>

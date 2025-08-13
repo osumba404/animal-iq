@@ -1,7 +1,7 @@
 <?php
 // public/forum.php - Community Forum
 require_once '../includes/db.php';
-require_once 'header.php';
+require_once 'header.php'; 
 require_once 'nav.php';
 
 // Fetch all forum threads with author info
@@ -14,6 +14,8 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+<!-- Your HTML/CSS below is unchanged -->
+
 
 <style>
 /* Premium Forum Styling */
@@ -211,8 +213,10 @@ $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <li class="forum-topic">
           <div class="topic-content">
             <div class="topic-avatar">
-              <img src="assets/images/profiles/<?php echo htmlspecialchars($t['profile_picture']); ?>" 
+              <img src="../uploads/profile_pics/<?php echo htmlspecialchars($t['profile_picture']); ?>" 
                    alt="Profile of <?php echo htmlspecialchars($t['name']); ?>">
+
+
             </div>
             
             <div class="topic-details">

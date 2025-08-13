@@ -1,49 +1,50 @@
 <?php
-// new_thread.php - Start a new thread
-session_start();
+// public/new_thread.php - Start a new thread
 require_once '../includes/db.php';
-require_once '../includes/functions.php';
-
-if (!is_logged_in()) {
-    redirect('login.php');
-}
+require_once 'header.php'; // session + auth check here
+require_once 'nav.php';
 
 $errors = [];
 
+// Only allow logged-in users to create threads
+if (!isset($_SESSION['user']['id'])) {
+    header("Location: login.php");
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = sanitize_input($_POST['title'] ?? '');
-    $category = sanitize_input($_POST['category'] ?? '');
-    $content = sanitize_input($_POST['content'] ?? '');
-    $author_id = $_SESSION['user_id'];
+    $title = trim($_POST['title'] ?? '');
+    $category = trim($_POST['category'] ?? '');
+    $content = trim($_POST['content'] ?? '');
+    $author_id = $_SESSION['user']['id'];
 
     if (empty($title) || empty($content)) {
         $errors[] = "Title and content are required.";
     } else {
         // Insert into forum_threads
-        $stmt = $conn->prepare("INSERT INTO forum_threads (title, category, author_id) VALUES (?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO forum_threads (title, category, author_id) VALUES (?, ?, ?)");
         $stmt->execute([$title, $category, $author_id]);
-        $thread_id = $conn->lastInsertId();
+        $thread_id = $pdo->lastInsertId();
 
-        // Insert first post in forum_posts
-        $stmt = $conn->prepare("INSERT INTO forum_posts (thread_id, author_id, content) VALUES (?, ?, ?)");
+        // Insert the first post into forum_posts
+        $stmt = $pdo->prepare("INSERT INTO forum_posts (thread_id, author_id, content) VALUES (?, ?, ?)");
         $stmt->execute([$thread_id, $author_id, $content]);
 
-        redirect("topic.php?id=$thread_id");
+        header("Location: topic.php?id=" . $thread_id);
+        exit;
     }
 }
-
-require_once 'header.php';
-require_once 'nav.php';
 ?>
 
 <main>
     <h1>Start a New Thread</h1>
     <?php if (!empty($errors)): ?>
         <div style="color:red;">
-            <?php foreach ($errors as $e) echo "<p>$e</p>"; ?>
+            <?php foreach ($errors as $e) echo "<p>" . htmlspecialchars($e) . "</p>"; ?>
         </div>
     <?php endif; ?>
-    <form method="post" action="new_thread.php">
+
+    <form method="post" action="">
         <label for="title">Thread Title:</label><br>
         <input type="text" id="title" name="title" required><br><br>
 

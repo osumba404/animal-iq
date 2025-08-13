@@ -295,6 +295,7 @@ CREATE TABLE quizzes (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+
 CREATE TABLE quiz_questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     quiz_id INT,
@@ -395,6 +396,11 @@ CREATE TABLE forum_posts (
     FOREIGN KEY (thread_id) REFERENCES forum_threads(id),
     FOREIGN KEY (author_id) REFERENCES users(id)
 );
+
+
+
+
+
 
 -- DAILY FEATURE
 CREATE TABLE daily_feature (
@@ -509,7 +515,10 @@ CREATE TABLE management_team (
     message TEXT,                                 -- "What word they have to say"
     photo_url VARCHAR(255),                       -- URL to profile picture
     email VARCHAR(150),                           -- Contact email (optional)
-    linkedin_url VARCHAR(255),                    -- Link to LinkedIn profile
+    linkedin_url VARCHAR(255), 
+    ig_url VARCHAR(255),
+    fb_url VARCHAR(255),
+    x_url VARCHAR(255),
     status ENUM('active', 'inactive') DEFAULT 'active', -- Whether they are still in the team
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

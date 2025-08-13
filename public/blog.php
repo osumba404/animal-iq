@@ -203,6 +203,48 @@ $blogs = getApprovedBlogs($pdo, null, $searchTerm);
     margin-bottom: 2rem;
   }
 }
+
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Thumbnail container */
+.post-thumbnail {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-lighter));
+  overflow: hidden;
+}
+
+/* Image style */
+.post-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Letter avatar style */
+.letter-avatar {
+  width: 80px;
+  height: 80px;
+  background: #0077cc;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 2.5rem;
+  border-radius: 50%;
+  text-transform: uppercase;
+}
+
+
 </style>
 
 <div class="blog-listing-page">
@@ -216,23 +258,34 @@ $blogs = getApprovedBlogs($pdo, null, $searchTerm);
 
   <?php if (count($blogs) > 0): ?>
     <div class="blog-grid">
-      <?php foreach($blogs as $post): ?>
-        <article class="blog-card">
-          <div class="blog-card-image">
-            <?php echo substr(htmlspecialchars($post['title']), 0, 1); ?>
-          </div>
-          <div class="blog-content">
-            <h2 class="blog-title"><?php echo htmlspecialchars($post['title']); ?></h2>
-            <div class="blog-meta">
-              <span>By <?php echo htmlspecialchars($post['author_name']); ?></span>
-              <span>•</span>
-              <span><?php echo date('F j, Y ~ g:i a', strtotime($post['created_at'])); ?></span>
+
+        <?php foreach($blogs as $blog): ?>
+          <article class="blog-card">
+            <div class="post-thumbnail">
+              <?php
+              $firstLetter = strtoupper(substr($blog['title'], 0, 1));
+              $imagePath = !empty($blog['featured_image']) ? "../uploads/posts/" . htmlspecialchars($blog['featured_image']) : null;
+
+              if ($imagePath && file_exists($imagePath)): ?>
+                <img src="<?php echo $imagePath; ?>" alt="Thumbnail for <?php echo htmlspecialchars($blog['title']); ?>">
+              <?php else: ?>
+                <div class="letter-avatar"><?php echo $firstLetter; ?></div>
+              <?php endif; ?>
             </div>
-            <p class="blog-summary"><?php echo nl2br(htmlspecialchars($post['summary'])); ?></p>
-            <a href="blog_post.php?id=<?php echo $post['id']; ?>" class="read-more">Read more</a>
-          </div>
-        </article>
-      <?php endforeach; ?>
+
+            <div class="blog-content">
+              <h2 class="blog-title"><?php echo htmlspecialchars($blog['title']); ?></h2>
+              <div class="blog-meta">
+                <span>By <?php echo htmlspecialchars($blog['author_name']); ?></span>
+                <span>•</span>
+                <span><?php echo date('F j, Y ~ g:i a', strtotime($blog['created_at'])); ?></span>
+              </div>
+              <p class="blog-summary"><?php echo nl2br(htmlspecialchars($blog['summary'])); ?></p>
+              <a href="blog_post.php?id=<?php echo $post['id']; ?>" class="read-more">Read article</a>
+            </div>
+          </article>
+        <?php endforeach; ?>
+
     </div>
   <?php else: ?>
     <p class="no-posts">No blog posts found. <?php echo $searchTerm ? 'Try a different search term.' : 'Check back soon for new content!'; ?></p>

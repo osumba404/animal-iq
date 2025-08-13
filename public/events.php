@@ -100,7 +100,6 @@ $upcomingEvents = getEventsByCategory($pdo, $user_id, "DATE(e.event_date) > '$to
     echo '<div class="event-meta">';
     echo '<span class="meta-item"><i class="fas fa-map-marker-alt"></i> ' . htmlspecialchars($event['location']) . '</span>';
     echo '<span class="meta-item"><i class="fas fa-calendar-alt"></i> ' . htmlspecialchars($event['type']) . '</span>';
-    echo '<span class="meta-item"><i class="fas fa-user"></i> ' . htmlspecialchars($event['creator']) . '</span>';
     echo '</div>';
 
     echo '<p class="event-description">' . nl2br(htmlspecialchars($event['description'])) . '</p>';
