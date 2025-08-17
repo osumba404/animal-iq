@@ -206,9 +206,9 @@ function isActive($page) {
             <a href="manage_podcasts.php" class="<?= isActive('manage_podcasts.php') ?>">
                 <i class="fas fa-podcast"></i> Podcasts
             </a> 
-            <a href="manage_gallery.php" class="<?= isActive('manage_podcasts.php') ?>">
+            <!-- <a href="manage_gallery.php" class="<?= isActive('manage_podcasts.php') ?>">
                 <i class="fas fa-podcast"></i> Gallery
-            </a> 
+            </a>  -->
         </div>
         
         <div class="nav-section">

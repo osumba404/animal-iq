@@ -69,8 +69,24 @@ try {
 
 
     // Update taxonomy
-    $stmt = $pdo->prepare("UPDATE taxonomy SET species_id = ? WHERE animal_id = ?");
-    $stmt->execute([$species_id, $id]);
+    // $stmt = $pdo->prepare("UPDATE taxonomy SET species_id = ? WHERE animal_id = ?");
+    // $stmt->execute([$species_id, $id]);
+
+    // Check if taxonomy row exists for this animal
+    $checkTax = $pdo->prepare("SELECT COUNT(*) FROM taxonomy WHERE animal_id = ?");
+    $checkTax->execute([$id]);
+    $hasTax = $checkTax->fetchColumn() > 0;
+
+    if ($hasTax) {
+        // Update existing taxonomy
+        $stmt = $pdo->prepare("UPDATE taxonomy SET species_id = ? WHERE animal_id = ?");
+        $stmt->execute([$species_id, $id]);
+    } else {
+        // Insert taxonomy if missing
+        $stmt = $pdo->prepare("INSERT INTO taxonomy (animal_id, species_id) VALUES (?, ?)");
+        $stmt->execute([$id, $species_id]);
+    }
+
 
     // Update geography
     $stmt = $pdo->prepare("UPDATE animal_geography SET continent=?, subcontinent=?, country=?, realm=?, biome=? WHERE animal_id=?");

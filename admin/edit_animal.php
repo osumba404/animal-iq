@@ -24,11 +24,8 @@ $taxonomy_stmt = $pdo->prepare("SELECT species_id FROM taxonomy WHERE animal_id 
 $taxonomy_stmt->execute([$animal_id]);
 $taxonomy_row = $taxonomy_stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$taxonomy_row || !isset($taxonomy_row['species_id'])) {
-    die("Taxonomy data not found for this animal.");
-}
+$species_id = $taxonomy_row['species_id'] ?? null;
 
-$species_id = $taxonomy_row['species_id'];
 
 
 // Before rendering:
@@ -42,20 +39,24 @@ $facts = $facts->fetchAll(PDO::FETCH_ASSOC);
 
 
 // Fetch taxonomy values
-$species_stmt = $pdo->prepare("
-    SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
-           o.id AS order_id, c.id AS class_id, p.id AS phylum_id, k.id AS kingdom_id
-    FROM species s
-    JOIN genera g ON s.genus_id = g.id
-    JOIN families f ON g.family_id = f.id
-    JOIN orders o ON f.order_id = o.id
-    JOIN classes c ON o.class_id = c.id
-    JOIN phyla p ON c.phylum_id = p.id
-    JOIN kingdoms k ON p.kingdom_id = k.id
-    WHERE s.id = ?
-");
-$species_stmt->execute([$species_id]);
-$taxonomy = $species_stmt->fetch(PDO::FETCH_ASSOC);
+$taxonomy = [];
+if ($species_id) {
+    $species_stmt = $pdo->prepare("
+        SELECT s.id AS species_id, g.id AS genus_id, f.id AS family_id,
+               o.id AS order_id, c.id AS class_id, p.id AS phylum_id, k.id AS kingdom_id
+        FROM species s
+        JOIN genera g ON s.genus_id = g.id
+        JOIN families f ON g.family_id = f.id
+        JOIN orders o ON f.order_id = o.id
+        JOIN classes c ON o.class_id = c.id
+        JOIN phyla p ON c.phylum_id = p.id
+        JOIN kingdoms k ON p.kingdom_id = k.id
+        WHERE s.id = ?
+    ");
+    $species_stmt->execute([$species_id]);
+    $taxonomy = $species_stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+}
+
 
 // Fetch dropdown options
 $kingdoms = $pdo->query("SELECT * FROM kingdoms")->fetchAll(PDO::FETCH_ASSOC);
@@ -76,6 +77,12 @@ $habits = $habit_stmt->fetch(PDO::FETCH_ASSOC);
 $geo_stmt = $pdo->prepare("SELECT * FROM animal_geography WHERE animal_id = ?");
 $geo_stmt->execute([$animal_id]);
 $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
+
+// Fetch animal photos
+$stmt = $pdo->prepare("SELECT * FROM animal_photos WHERE animal_id = ?");
+$stmt->execute([$animal_id]);
+$photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -272,9 +279,10 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <label>Kingdom</label>
                     <select name="kingdom_id">
                         <?php foreach ($kingdoms as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['kingdom_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['kingdom_id'] ?? '') == $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
+
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -284,7 +292,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <select name="phylum_id" id="phylum-select">
                         <option value="">-- Select Phylum --</option>
                         <?php foreach ($phyla as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['phylum_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['phylum_id']?? '' )== $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -296,7 +304,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <select name="class_id" id="class-select">
                         <option value="">-- Select Class --</option>
                         <?php foreach ($classes as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['class_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['class_id']?? '') == $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -308,7 +316,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <select name="order_id" id="order-select">
                         <option value="">-- Select Order --</option>
                         <?php foreach ($orders as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['order_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['order_id']?? '') == $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -320,7 +328,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <select name="family_id" id="family-select">
                         <option value="">-- Select Family --</option>
                         <?php foreach ($families as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['family_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['family_id']?? '') == $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -332,7 +340,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <select name="genus_id" id="genus-select">
                         <option value="">-- Select Genus --</option>
                         <?php foreach ($genera as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['genus_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['genus_id']?? '') == $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -344,7 +352,7 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                     <select name="species_id" required>
                         <option value="">-- Select Species --</option>
                         <?php foreach ($species as $item): ?>
-                            <option value="<?= $item['id'] ?>" <?= $taxonomy['species_id'] == $item['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $item['id'] ?>" <?= ($taxonomy['species_id']?? '') == $item['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($item['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -490,6 +498,33 @@ $geo = $geo_stmt->fetch(PDO::FETCH_ASSOC);
                 </button>
             </form>
         </div>
+
+
+        <h3>Animal Photos</h3>
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <?php foreach ($photos as $photo): ?>
+                <div style="border:1px solid #ccc; padding:10px; border-radius:8px;">
+                    <img src="<?php echo htmlspecialchars($photo['photo_url']); ?>" alt="Photo" style="width:150px; height:auto; display:block; margin-bottom:10px;">
+                    <?php if (!empty($photo['caption'])): ?>
+                        <p><em><?php echo htmlspecialchars($photo['caption']); ?></em></p>
+                    <?php endif; ?>
+                    <label>Update Caption:</label>
+                    <input type="text" name="captions[<?php echo $photo['id']; ?>]" value="<?php echo htmlspecialchars($photo['caption']); ?>">
+                    <br>
+                    <label>Delete?</label>
+                    <input type="checkbox" name="delete_photos[]" value="<?php echo $photo['id']; ?>">
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <hr>
+
+        <label for="new_photos">Upload New Photos:</label>
+        <input type="file" name="new_photos[]" multiple accept="image/*">
+
+        <label for="new_captions">Captions (match order):</label>
+        <input type="text" name="new_captions[]" placeholder="Caption for photo 1">
+        <input type="text" name="new_captions[]" placeholder="Caption for photo 2">
     </div>
 
     <script>
