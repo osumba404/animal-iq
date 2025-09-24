@@ -44,43 +44,141 @@ $partners = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
+<style>
 
-    <style>
-        .team-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .team-member {
-            flex: 1 1 250px;
-            background: #fff;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .team-member img {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-        .team-member h3 {
-            margin: 5px 0;
-            font-size: 1.2rem;
-        }
-        .team-member p {
-            font-size: 0.9rem;
-            color: #555;
-        }
-        .team-member a {
-            display: inline-block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: #0077b5; /* LinkedIn blue */
-            font-weight: bold;
-        }
+/* Management Team - Premium Cards */
+.mgmt-team-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--color-primary); /* green heading */
+  margin: 3rem auto 1rem;
+  font-weight: 800;
+}
+
+.mgmt-team-grid {
+  max-width: var(--content-max-width);
+  margin: 0 auto 3rem;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.mgmt-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 620px; /* defines card height */
+  background: rgba(255,255,255,0.65); /* glassmorphism base */
+  backdrop-filter: saturate(120%) blur(8px);
+  -webkit-backdrop-filter: saturate(120%) blur(8px);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.08), 0 10px 10px rgba(0,0,0,0.06); /* Cupertino-like elevation */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mgmt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 34px rgba(0,0,0,0.12), 0 12px 12px rgba(0,0,0,0.08);
+}
+
+.mgmt-image-wrap {
+  position: relative;
+  flex: 0 0 60%; /* upper 60% */
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+}
+
+.mgmt-image-wrap img, .mgmt-image-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* soft gradient fade from image (top) into content (bottom) */
+.mgmt-image-fade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 28%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.08) 60%, rgba(0,0,0,0.14) 100%);
+  pointer-events: none;
+}
+
+.mgmt-content {
+  flex: 1; /* lower ~40% */
+  padding: 1rem 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.7) 0%,
+    rgba(255,255,255,0.85) 60%,
+    rgba(255,255,255,0.95) 100%
+  );
+}
+
+.mgmt-name {
+  margin: 0 0 0.25rem 0;
+  color: var(--color-primary-dark);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.mgmt-role {
+  color: var(--color-accent-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.mgmt-bio {
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0 0 0.75rem 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.mgmt-social {
+  margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-dark);
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  background: var(--color-accent-primary);
+  color: var(--color-primary-dark);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .mgmt-team-title { font-size: 1.6rem; }
+  .mgmt-card { height: 400px; }
+}
+
     </style>
 
 
@@ -160,35 +258,47 @@ $partners = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-<h1>Meet Our Management Team</h1>
+<h1 class="mgmt-team-title">Meet Our Management Team</h1>
 
-<div class="team-container">
+<div class="mgmt-team-grid">
     <?php foreach ($teamMembers as $member): ?>
-        <div class="team-member">
-            <?php if (!empty($member['photo_url'])): ?>
-                <img src="<?= htmlspecialchars($member['photo_url']); ?>" alt="<?= htmlspecialchars($member['name']); ?>">
-            <?php else: ?>
-                <img src="../uploads/management_team/" alt="Default Avatar">
-            <?php endif; ?>
-
-            <h3><?= htmlspecialchars($member['name']); ?></h3>
-            <p><strong><?= htmlspecialchars($member['role']); ?></strong></p>
-            <p><?= nl2br(htmlspecialchars($member['message'])); ?></p>
-
-            <?php if (!empty($member['linkedin_url'])): ?>
-                <a href="<?= htmlspecialchars($member['linkedin_url']); ?>" target="_blank">LinkedIn</a>
-            <?php endif; ?>
-            <?php if (!empty($member['ig_url'])): ?>
-                <a href="<?= htmlspecialchars($member['ig_url']); ?>" target="_blank">Instagram</a>
-            <?php endif; ?>
-            <?php if (!empty($member['fb_url'])): ?>
-                <a href="<?= htmlspecialchars($member['fb_url']); ?>" target="_blank">Facebook</a>
-            <?php endif; ?>
-            <?php if (!empty($member['x_url'])): ?>
-                <a href="<?= htmlspecialchars($member['x_url']); ?>" target="_blank">X</a>
-            <?php endif; ?>
-         
-        </div>
+        <article class="mgmt-card">
+            <div class="mgmt-image-wrap">
+                <?php if (!empty($member['photo_url'])): ?>
+                    <img src="<?= htmlspecialchars($member['photo_url']); ?>" alt="<?= htmlspecialchars($member['name']); ?>" loading="lazy">
+                <?php else: ?>
+                    <div class="mgmt-image-fallback" aria-hidden="true"></div>
+                <?php endif; ?>
+                <div class="mgmt-image-fade"></div>
+            </div>
+            <div class="mgmt-content">
+                <h3 class="mgmt-name"><?= htmlspecialchars($member['name']); ?></h3>
+                <span class="mgmt-role"><?= htmlspecialchars($member['role']); ?></span>
+                <p class="mgmt-bio"><?= nl2br(htmlspecialchars($member['message'])); ?></p>
+                <div class="mgmt-social">
+                    <?php if (!empty($member['linkedin_url'])): ?>
+                        <a class="social-btn" href="<?= htmlspecialchars($member['linkedin_url']); ?>" target="_blank" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V24h-4V8.5zm7 0h3.84v2.11h.05c.53-1 1.83-2.11 3.77-2.11 4.03 0 4.78 2.65 4.78 6.1V24h-4v-7.53c0-1.8-.03-4.12-2.51-4.12-2.51 0-2.9 1.96-2.9 3.99V24h-4V8.5z"/></svg>
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($member['ig_url'])): ?>
+                        <a class="social-btn" href="<?= htmlspecialchars($member['ig_url']); ?>" target="_blank" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.3.4.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.4.3 1.1.4 2.3.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.3-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.4.2-1.1.3-2.3.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.3-.4-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.4-.3-1.1-.4-2.3C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.3.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .4-.2 1.1-.3 2.3-.4C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 0 5.7 0 4.9.1 4.2.3 3.4.6 2.8.9 2.2 1.5 1.6 2.1 1.3 2.7 1 3.5.8 4.2.7 5 .6 6.3.5 7.6.5 8 0 12s0 3.3.1 4.6c.1 1.3.2 2.1.4 2.8.3.8.6 1.4 1.2 2 .6.6 1.2.9 2 1.2.7.2 1.5.3 2.8.4 1.3.1 1.7.1 4.6.1s3.3 0 4.6-.1c1.3-.1 2.1-.2 2.8-.4.8-.3 1.4-.6 2-1.2.6-.6.9-1.2 1.2-2 .2-.7.3-1.5.4-2.8.1-1.3.1-1.7.1-4.6s0-3.3-.1-4.6c-.1-1.3-.2-2.1-.4-2.8-.3-.8-.6-1.4-1.2-2-.6-.6-1.2-.9-2-1.2C19.3.1 18.5 0 17.2 0 15.9 0 15.5 0 12 0z"/><path d="M12 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 1 0 12 5.8m0-2.2a8.4 8.4 0 1 1 0 16.8 8.4 8.4 0 1 1 0-16.8z"/><circle cx="18.4" cy="5.6" r="1.4"/></svg>
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($member['fb_url'])): ?>
+                        <a class="social-btn" href="<?= htmlspecialchars($member['fb_url']); ?>" target="_blank" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.326v21.348C0 23.406.593 24 1.325 24h11.49v-9.294H9.847V11.29h2.968V8.797c0-2.937 1.793-4.54 4.415-4.54 1.255 0 2.333.093 2.646.135v3.07h-1.816c-1.425 0-1.701.677-1.701 1.67v2.158h3.402l-.443 3.416h-2.959V24h5.803C23.406 24 24 23.406 24 22.674V1.326C24 .593 23.406 0 22.675 0z"/></svg>
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($member['x_url'])): ?>
+                        <a class="social-btn" href="<?= htmlspecialchars($member['x_url']); ?>" target="_blank" aria-label="X">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M18.146 2H21l-6.49 7.413L22 22h-6.828l-4.77-6.227L4.8 22H2l7.17-8.19L2 2h6.828l4.518 5.896L18.146 2zm-2.39 18h2.223L8.35 4H6.127l9.63 16z"/></svg>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </article>
     <?php endforeach; ?>
 </div>
 

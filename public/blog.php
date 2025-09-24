@@ -281,7 +281,7 @@ $blogs = getApprovedBlogs($pdo, null, $searchTerm);
                 <span><?php echo date('F j, Y ~ g:i a', strtotime($blog['created_at'])); ?></span>
               </div>
               <p class="blog-summary"><?php echo nl2br(htmlspecialchars($blog['summary'])); ?></p>
-              <a href="blog_post.php?id=<?php echo $post['id']; ?>" class="read-more">Read article</a>
+              <a href="blog_post.php?id=<?php echo $blog['id']; ?>" class="read-more">Read article</a>
             </div>
           </article>
         <?php endforeach; ?>

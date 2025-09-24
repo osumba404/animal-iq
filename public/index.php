@@ -56,9 +56,1094 @@ $partners = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
     <link rel="manifest" href="manifest.json">
 
-
-    <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
+<style>
+/* public/assets/css/style.css */
+
+/* Base Styles */
+/* Premium Homepage Styles */
+:root {
+    --hero-gradient: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
+    --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+    --section-spacing: 5rem;
+    --content-max-width: 1200px;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: var( --color-bg-primary);
+  color: var( --color-bg-primary);
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ==================== */
+/* Premium Carousel */
+/* ==================== */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    max-height: 60vh;
+    margin: 1rem 0 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-wrapper {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    height: 100%;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(1, 50, 33, 0.2) 0%,
+        rgba(0, 36, 24, 0.7) 100%
+    );
+    z-index: 1;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 60vh;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.carousel-slide.active img {
+    transform: scale(1.03);
+}
+
+.carousel-slide .caption {
+    position: absolute;
+    bottom: 15%;
+    left: 10%;
+    max-width: 80%;
+    color: var(--color-text-inverted);
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.carousel-slide h2 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+}
+
+.carousel-slide p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.carousel-slide .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 25px;
+    background: var(--color-accent-primary);
+    color: var(--color-primary-dark);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(232, 184, 36, 0.3);
+    color: var(--color-text-inverted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-arrow:hover {
+    background: var(--color-accent-primary);
+    color: var(--color-primary-dark);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev {
+    left: 2rem;
+}
+
+.next {
+    right: 2rem;
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.8rem;
+    z-index: 10;
+}
+
+.carousel-indicators span {
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.carousel-indicators span.active {
+    background: var(--color-accent-primary);
+    width: 60px;
+}
+
+/* Animation for slide transitions */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.carousel-slide {
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .carousel-slide .caption {
+        left: 5%;
+        max-width: 90%;
+        bottom: 5%;
+    }
+    
+    .carousel-slide h2 {
+        font-size: 2.5rem;
+    }
+    
+    .carousel-slide p {
+        font-size: 1.2rem;
+    }
+    
+    .carousel-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-slide h2 {
+        font-size: 2rem;
+    }
+    
+    .carousel-slide p {
+        font-size: 1rem;
+    }
+    
+    .carousel-slide .btn {
+        padding: 0.8rem 1.5rem;
+    }
+}
+
+
+/* Featured Animal Section - Premium Redesign */
+.featured-section {
+    margin: 2.5rem 0;
+    background: var(--color-bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.featured-section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.featured-animal {
+    display: flex;
+    flex-direction: row;
+    max-height: 375px;
+}
+
+.featured-animal-image {
+    position: relative;
+    flex: 0 0 40%;
+    max-width: 40%;
+    height: auto;
+    overflow: hidden;
+    background: var(--color-bg-primary);
+}
+
+.featured-animal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.featured-animal:hover .featured-animal-image img {
+    transform: scale(1.03);
+}
+
+.featured-animal-content {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.animal-badge {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--color-accent-primary);
+    color: var(--color-primary-dark);
+    padding: 0.5rem 1.25rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: pulse 2s infinite;
+}
+
+.animal-icon {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.animal-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-accent-primary);
+}
+
+.animal-title {
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-primary-dark);
+    line-height: 1.2;
+}
+
+.animal-scientific {
+    display: block;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+}
+
+.animal-description {
+    color: var(--color-text-primary);
+    line-height: 1.7;
+    margin-bottom: 1.75rem;
+}
+
+.animal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+.meta-item svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5rem;
+    color: var(--color-accent-primary);
+}
+
+.animal-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+}
+
+.animal-link:hover {
+    color: var(--color-accent-secondary);
+    transform: translateX(5px);
+}
+
+.animal-link svg {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.animal-link:hover svg {
+    transform: translateX(3px);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .featured-animal {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .featured-animal-image {
+        flex: 0 0 100%;
+        max-width: 100%;
+        height: 250px;
+    }
+    
+    .featured-animal-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .featured-animal-content {
+        padding: 1.5rem;
+    }
+    
+    .animal-title {
+        font-size: 1.5rem;
+    }
+    
+    .animal-scientific {
+        font-size: 1rem;
+    }
+    
+    .animal-description {
+        font-size: 0.95rem;
+    }
+}
+
+/* Trivia Section - Premium Redesign */
+.trivia-section {
+    background: var(--color-bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.trivia-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+}
+
+.trivia-icon {
+    flex-shrink: 0;
+    background: var(--color-accent-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-dark);
+}
+
+.trivia-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-primary-dark);
+    font-size: 1.2rem;
+}
+
+.trivia-content p {
+    margin: 0;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+/* Premium CTA Styles */
+.cta-premium {
+    padding: 5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, 
+        var(--color-primary-dark) 0%, 
+        var(--color-primary) 100%);
+}
+
+.cta-container {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-content {
+    flex: 1;
+    color: var(--color-text-inverted);
+}
+
+.cta-title {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.highlight {
+    color: var(--color-accent-primary);
+    position: relative;
+    display: inline-block;
+}
+
+.highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: rgba(232, 184, 36, 0.3);
+    z-index: -1;
+    transform: skew(-15deg);
+}
+
+.cta-text {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-btn svg {
+    margin-left: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.primary-btn {
+    background: var(--color-accent-primary);
+    color: var(--color-primary-dark);
+    box-shadow: 0 4px 15px rgba(232, 184, 36, 0.4);
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(232, 184, 36, 0.5);
+}
+
+.primary-btn:hover svg {
+    transform: translateX(5px);
+}
+
+.secondary-btn {
+    background: transparent;
+    color: var(--color-text-inverted);
+    border: 2px solid var(--color-accent-primary);
+    box-shadow: 0 4px 15px rgba(232, 184, 36, 0.1);
+}
+
+.secondary-btn:hover {
+    background: rgba(232, 184, 36, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(232, 184, 36, 0.2);
+}
+
+.secondary-btn:hover svg {
+    transform: rotate(45deg);
+}
+
+.cta-decoration {
+    position: relative;
+    flex: 0 0 40%;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deco-circle {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle, 
+        rgba(232, 184, 36, 0.15) 0%, 
+        transparent 75%
+    );
+    position: absolute;
+    animation: float 6s ease-in-out infinite;
+}
+
+.deco-dots {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(
+        var(--color-accent-primary) 1px, 
+        transparent 1px
+    );
+    background-size: 15px 15px;
+    opacity: 0.5;
+    animation: rotate 60s linear infinite;
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .cta-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+    }
+    
+    .cta-text {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cta-buttons {
+        justify-content: center;
+    }
+    
+    .cta-decoration {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .cta-premium {
+        padding: 4rem 1.5rem;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+    
+    .cta-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Premium Content Grid Styles */
+.premium-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+    max-width: var(--content-max-width);
+    padding: 0 2rem;
+}
+
+.content-card {
+    background: var(--color-bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.section-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.75rem;
+    color: var(--color-accent-primary);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--color-primary-dark);
+}
+
+/* Card Styles */
+.card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+
+
+.premium-card {
+    background: var(--color-bg-primary);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid var(--color-border-light);
+}
+
+.premium-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-image-container {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.premium-card:hover .card-image {
+    transform: scale(1.05);
+}
+
+.card-content {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-primary-dark);
+    line-height: 1.3;
+}
+
+.card-excerpt {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-action {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.card-action svg {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+    width: 16px;
+    height: 16px;
+}
+
+.card-action:hover {
+    color: var(--color-accent-secondary);
+}
+
+.card-action:hover svg {
+    transform: translateX(3px);
+}
+
+/* Event Card Specific Styles */
+.event-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+}
+
+.event-date {
+    background: var(--color-accent-primary);
+    color: var(--color-primary-dark);
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    margin-right: 1rem;
+    min-width: 50px;
+    flex-shrink: 0;
+}
+
+.event-day {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.event-month {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
+.event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.event-detail {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.event-detail svg {
+    margin-right: 0.5rem;
+    width: 14px;
+    height: 14px;
+    color: var(--color-accent-primary);
+}
+
+/* Quiz Card Specific Styles */
+.quiz-card {
+    display: flex;
+    align-items: center;
+}
+
+.quiz-icon {
+    flex: 0 0 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(232, 184, 36, 0.1);
+}
+
+.quiz-icon svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--color-accent-primary);
+}
+
+/* Section CTA Styles */
+.section-cta {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 2rem;
+    color: var(--color-accent-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.section-cta svg {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+    width: 18px;
+    height: 18px;
+}
+
+.section-cta:hover {
+    color: var(--color-accent-secondary);
+}
+
+.section-cta:hover svg {
+    transform: translateX(3px);
+}
+
+/* Endangered Species Section */
+.endangered-section {
+    margin: 3rem 0;
+    max-width: var(--content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1.5rem;
+}
+
+.species-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    width: 100%;
+}
+
+.species-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-bg-primary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--color-border-light);
+}
+
+.species-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.species-image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 66.67%; /* 3:2 aspect ratio */
+    overflow: hidden;
+}
+
+.species-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.species-card:hover .species-image {
+    transform: scale(1.05);
+}
+
+.species-content {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.species-name {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-primary-dark);
+    line-height: 1.3;
+}
+
+.species-scientific {
+    font-style: italic;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.species-description {
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.species-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: auto;
+    transition: all 0.3s ease;
+}
+
+.species-link:hover {
+    color: var(--color-accent-secondary);
+}
+
+.species-link svg {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+    width: 16px;
+    height: 16px;
+}
+
+.species-link:hover svg {
+    transform: translateX(3px);
+}
+
+.endangered-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #e74c3c;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .species-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.25rem;
+    }
+    
+    .species-content {
+        padding: 1rem;
+    }
+    
+    .species-name {
+        font-size: 1rem;
+    }
+    
+    .species-scientific,
+    .species-description {
+        font-size: 0.85rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.content-card, 
+.featured-section, 
+.trivia-section, 
+.endangered-section {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.content-card:nth-child(2) { 
+    animation-delay: 0.1s; 
+}
+
+.content-card:nth-child(3) { 
+    animation-delay: 0.2s; 
+}
+
+.trivia-section { 
+    animation-delay: 0.1s; 
+}
+
+.endangered-section { 
+    animation-delay: 0.2s; 
+}
+
+
+
+.species-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+</style>
 
 
 <!-- Caurosell -->
@@ -147,7 +1232,7 @@ endif;
                 <a href="animal.php?id=<?= $animal['id'] ?>" class="animal-link">
                     Learn more about <?= htmlspecialchars($animal['common_name']) ?>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                        <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
             </div>
@@ -202,7 +1287,7 @@ endif;
                     <span>Learn More</span>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </a>
             </div>
@@ -364,47 +1449,46 @@ endif;
 </div>
 
 <!-- Endangered Species Spotlight -->
-<section class="endangered-section">
+<section class="content-card">
     <div class="section-header">
         <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
         <h2 class="section-title">Endangered Species Spotlight</h2>
     </div>
     
     <div class="species-grid">
         <?php foreach ($endangered as $animal): ?>
-        <article class="species-card">
-            <div class="species-image-container">
+        <article class="premium-card">
+            <div class="card-image-container">
                 <img src="../uploads/animals/<?= htmlspecialchars($animal['main_photo']) ?>" 
                      alt="<?= htmlspecialchars($animal['common_name']) ?>" 
-                     class="species-image"
+                     class="card-image"
                      loading="lazy">
                 <div class="endangered-badge">Endangered</div>
-                <div class="image-overlay"></div>
             </div>
-            <div class="species-content">
-                <h3 class="species-name"><?= htmlspecialchars($animal['common_name']) ?></h3>
-                <p class="species-scientific"><?= htmlspecialchars($animal['scientific_name']) ?></p>
-                <p class="species-description"><?= htmlspecialchars(substr($animal['appearance'], 0, 100)) . '...'; ?></p>
-               
-                 <a href="animal.php?id=<?= $animal['id'] ?>" class="animal-link">
-                    Learn more about <?= htmlspecialchars($animal['common_name']) ?>
+            <div class="card-content">
+                <h3 class="card-title"><?= htmlspecialchars($animal['common_name']) ?></h3>
+                <p class="card-excerpt"><?= htmlspecialchars(substr($animal['appearance'], 0, 100)) . '...'; ?></p>
+                <a href="animal.php?id=<?= $animal['id'] ?>" class="card-action">
+                    Learn More
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
             </div>
         </article>
         <?php endforeach; ?>
     </div>
     
-    <div class="section-footer">
-        <a href="encyclopedia.php?filter=endangered" class="section-cta">
-            See more endangered species
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </a>
-    </div>
+    <a href="encyclopedia.php?filter=endangered" class="section-cta">
+        View All Endangered Species
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+    </a>
 </section>
 </main>
 

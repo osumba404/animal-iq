@@ -64,18 +64,18 @@ if (isset($_POST['edit_member'])) {
                 name=?, role=?, message=?, email=?, linkedin_url=?, ig_url=?, fb_url=?, x_url=?, photo_url=?, status=? 
             WHERE id=?
         ");
-        $update->execute([$name, $role, $message, $email, $linkedin_url, $photo_url, $status, $memberId]);
+        $update->execute([$name, $role, $message, $email, $linkedin_url, $ig_url, $fb_url, $x_url, $photo_url, $status, $memberId]);
     } else {
         $update = $pdo->prepare("
             UPDATE management_team SET 
-                name=?, role=?, message=?, email=?, linkedin_url=?, status=? 
+                name=?, role=?, message=?, email=?, linkedin_url=?, ig_url=?, fb_url=?, x_url=?, status=? 
             WHERE id=?
         ");
         $update->execute([$name, $role, $message, $email, $linkedin_url, $ig_url, $fb_url, $x_url, $status, $memberId]);
     }
 
-    header("Location: manage_team.php");
-    exit;
+    // header("Location: manage_team.php");
+    // exit;
 }
 
 // DELETE MEMBER

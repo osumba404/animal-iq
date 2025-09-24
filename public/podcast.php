@@ -4,6 +4,7 @@ require_once '../includes/db.php';
 require_once 'header.php';
 require_once 'nav.php';
 
+/* Commenting out the original content
 // Fetch podcasts from DB
 $sql = "SELECT p.*, u.name AS contributor_name
         FROM podcasts p
@@ -124,6 +125,60 @@ audio {
     </div>
   </div>
 <?php endforeach; ?>
+</div>
+*/
+?>
+
+<style>
+.coming-soon {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.coming-soon h1 {
+  font-size: 3rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.coming-soon p {
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.coming-soon .icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-accent-primary);
+}
+
+@media (max-width: 768px) {
+  .coming-soon h1 {
+    font-size: 2.5rem;
+  }
+  
+  .coming-soon p {
+    font-size: 1.1rem;
+  }
+}
+</style>
+
+<div class="coming-soon">
+  <div class="icon">
+    <i class="fas fa-podcast"></i>
+  </div>
+  <h1>Coming Soon</h1>
+  <p>We're working hard to bring you amazing podcast content about wildlife, conservation, and animal intelligence. Stay tuned for updates!</p>
+  <a href="index.php" class="btn btn-primary">Return Home</a>
 </div>
 
 <?php require_once 'footer.php'; ?>

@@ -48,6 +48,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+    <style>
+        /* Blend editor with site colors */
+        :root {
+            --cms-accent: var(--color-primary-accent, #013221);
+            --cms-secondary: var(--color-secondary-accent, #e8b824);
+            --cms-dark: var(--color-primary-dark, #1E1811);
+            --cms-light: var(--color-primary-light, #FFF8E8);
+        }
+        .ql-toolbar.ql-snow {
+            border-color: var(--cms-accent);
+            background: rgba(1,50,33,0.04);
+        }
+        .ql-container.ql-snow {
+            border-color: var(--cms-accent);
+        }
+        .ql-snow .ql-picker-options {
+            border-color: var(--cms-accent);
+        }
+        .ql-snow .ql-stroke { stroke: var(--cms-dark); }
+        .ql-snow .ql-fill { fill: var(--cms-dark); }
+        .ql-snow .ql-picker.ql-expanded .ql-picker-label { color: var(--cms-dark); }
+        .ql-snow .ql-picker.ql-expanded .ql-picker-options { background: var(--cms-light); }
+        .ql-snow .ql-picker-label:hover, .ql-snow .ql-picker-item:hover,
+        .ql-snow .ql-toolbar button:hover svg { color: var(--cms-accent); stroke: var(--cms-accent); }
+        .ql-snow .ql-active svg, .ql-snow .ql-active .ql-stroke { stroke: var(--cms-secondary); }
+        .ql-snow .ql-active .ql-fill { fill: var(--cms-secondary); }
+    </style>
+</head>
+<body>
 
 <div class="container mt-5">
     <h2>Add New Post</h2>
@@ -70,7 +107,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="mb-3">
             <label class="form-label">Content</label>
-            <textarea name="body" class="form-control" rows="6" required></textarea>
+            <!-- Custom CMS Editor: Quill -->
+            <div id="editor-toolbar">
+              <span class="ql-formats">
+                <select class="ql-font"></select>
+                <select class="ql-size"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+              </span>
+              <span class="ql-formats">
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-indent" value="-1"></button>
+                <button class="ql-indent" value="+1"></button>
+                <select class="ql-align"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+                <button class="ql-code-block"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-clean"></button>
+              </span>
+            </div>
+            <div id="editor" style="height: 350px;"></div>
+            <!-- Hidden textarea posted to server -->
+            <textarea id="editor-html" name="body" class="d-none" required></textarea>
         </div>
 
         <div class="mb-3">
@@ -79,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="mb-3">
-            <label for="type">Content Type</label>
+            <label for="type" class="form-label">Content Type</label>
             <select name="type" id="type" class="form-select" required onchange="toggleOtherInput(this)">
                 <option value="announcement">Announcement</option>
                 <option value="educational">Educational</option>
@@ -96,10 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="mb-3">
             <label class="form-label">Region</label>
-            <input type="text" name="region" required value="<?= isset($_POST['region']) ? htmlspecialchars($_POST['region']) : '' ?>">
-
-
-             
+            <input type="text" name="region" class="form-control" required value="<?= isset($_POST['region']) ? htmlspecialchars($_POST['region']) : '' ?>">
         </div>
 
         <div class="mb-3">
@@ -108,16 +176,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="pending" <?= (isset($_POST['status']) && $_POST['status'] === 'pending') ? 'selected' : '' ?>>Pending</option>
                 <option value="approved" <?= (isset($_POST['status']) && $_POST['status'] === 'approved') ? 'selected' : '' ?>>Approved</option>
                 <option value="rejected" <?= (isset($_POST['status']) && $_POST['status'] === 'rejected') ? 'selected' : '' ?>>Rejected</option>
-
-
-
-
             </select>
         </div>
 
         <button type="submit" class="btn btn-primary">Publish Post</button>
     </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script>
+    // Initialize Quill
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: '#editor-toolbar'
+        }
+    });
+
+    // On form submit, push HTML into hidden textarea
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function () {
+        document.getElementById('editor-html').value = quill.root.innerHTML.trim();
+    });
+</script>
 
 <script>
 function toggleOtherInput(select) {
@@ -130,4 +211,6 @@ function toggleOtherInput(select) {
 }
 </script>
 
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
